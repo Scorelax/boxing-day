@@ -9,13 +9,29 @@ A yearly prediction pool built around the Premier League's Boxing Day fixtures. 
 ```
 index.html      the app (currently a lightweight scaffold — see Status)
 data/
-  matches.csv       this year's Boxing Day fixtures
-  categories.csv     the bet categories and how each is answered
-scripts/          (empty for now — live-data and squad-eligibility scripts land here)
+  matches.csv             this year's Boxing Day fixtures — empty until Dec 25 (see below)
+  eligible-players.csv     pool of players the squad bet can pick from — same
+  categories.csv           the bet categories and how each is answered (static, doesn't change)
+scripts/
+  fetch_boxing_day.py     the Dec-25 job — see below
+.github/workflows/
+  fetch-boxing-day.yml    runs fetch_boxing_day.py once a year, Dec 25
 ```
 
-### `data/matches.csv`
-One row per match. `match_id` is the fixture's ID in the Premier League's own live-data API (`footballapi.pulselive.com` — see "Live match data" below) so a future script can pull that specific match's result/stats directly. `home_score`/`away_score` are blank until the match is played. Kickoff times this far out are provisional (`15:00Z` placeholder) — the PL assigns exact broadcast kickoff times closer to the date.
+### Fixtures aren't known months out — `scripts/fetch_boxing_day.py`
+
+The Premier League publishes fixture pairings for a round well in advance, but pairings can still move (and kickoff times almost always aren't fixed until nearer the day, for broadcast scheduling). So `data/matches.csv` and `data/eligible-players.csv` start each cycle **empty** and only get filled in by `.github/workflows/fetch-boxing-day.yml`, scheduled for **06:00 UTC on December 25th** — the day before, once the round is actually locked in. That one script:
+
+1. Pulls the confirmed Dec 25–27 fixtures from `footballapi.pulselive.com` into `data/matches.csv` (`match_id` is that API's fixture ID, so a later script can pull that specific match's live result/stats directly).
+2. Works out which clubs are playing from those fixtures, then filters FPL's full player list (`draft.premierleague.com/api/bootstrap-static`) down to just those clubs' players, into `data/eligible-players.csv` — the pool the squad-picker form draws from.
+
+Both files are a full overwrite each run (there's no "previous state" to merge — this only runs once a year, right before the event). It can also be run manually (`workflow_dispatch`, with an optional `year` input for testing) or by hand:
+```bash
+BOXING_DAY_YEAR=2026 python scripts/fetch_boxing_day.py
+```
+(`BOXING_DAY_YEAR` defaults to the current year if unset — only useful for testing against a year other than "now".)
+
+Cross-referencing the two APIs' clubs is done by matching their 3-letter abbreviations (`ARS`, `BHA`, etc.) — confirmed these line up exactly between the two systems, since they don't share numeric team IDs.
 
 ### `data/categories.csv`
 The 17 things players predict each year, with a `type` telling the app (and eventually the submission form) how that category is answered:
@@ -45,9 +61,9 @@ Each player also drafts a one-time, one-day fantasy XI. The category's score is 
 
 ## Status
 
-This repo is scaffolding, set up ahead of the 2026-12-26 event while the plan is fresh. Not built yet:
+This repo is scaffolding, set up ahead of the 2026-12-26 event while the plan is fresh. Built: fixture/eligible-player fetching (above). Not built yet:
 
-1. **The submission form itself** — a squad picker (enforcing the position/club-limit rules above, filtered to eligible players) plus inputs for the other 16 categories. Decided approach: a small **Cloudflare Worker** that receives submissions and commits them to this repo via the GitHub API, so `data/` stays the single source of truth rather than introducing a separate database. Not built yet.
+1. **The submission form itself** — a squad picker (enforcing the position/club-limit rules above, filtered to `eligible-players.csv`) plus inputs for the other 16 categories. Decided approach: a small **Cloudflare Worker** that receives submissions and commits them to this repo via the GitHub API, so `data/` stays the single source of truth rather than introducing a separate database.
 2. **`data/submissions.csv`** — one row per player per category per year. Schema not finalized until the form exists, to avoid designing it twice.
 3. **`data/results.csv`** — the actual correct answers per year, filled in as Boxing Day plays out, likely semi-automated (see below).
 4. **The stats/leaderboard page itself** (who guessed what right, standings) — build once there's real submission data to show.

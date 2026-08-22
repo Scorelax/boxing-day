@@ -123,17 +123,24 @@ const TYPE_LABEL={match_score:"score",number:"number",team_pick:"team",match_pic
     return;
   }
 
-  const year=matches[0]?.season||"—";
-  document.getElementById("yearLabel").textContent=`Boxing Day ${year} · ${matches.length} matches`;
+  const year=matches[0]?.season||new Date().getUTCFullYear();
+  document.getElementById("yearLabel").textContent=matches.length
+    ?`Boxing Day ${year} · ${matches.length} matches`
+    :`Boxing Day ${year}`;
 
-  document.getElementById("fixturesTable").innerHTML=`
-    <thead><tr><th>Kickoff</th><th>Home</th><th></th><th>Away</th></tr></thead>
-    <tbody>${matches.map(m=>{
-      const d=new Date(m.kickoff);
-      const when=isNaN(d)?m.kickoff:d.toLocaleString("en-GB",{weekday:"short",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"});
-      const played=m.home_score!==""&&m.away_score!=="";
-      return `<tr><td>${when}</td><td>${m.home_team}</td><td class="vs">${played?m.home_score+' – '+m.away_score:'vs'}</td><td>${m.away_team}</td></tr>`;
-    }).join("")}</tbody>`;
+  if(!matches.length){
+    document.getElementById("fixturesTable").parentElement.outerHTML=
+      `<div class="rec"><div class="cap">Fixtures not confirmed yet</div><div class="det">The Premier League only finalizes Boxing Day kickoff times/pairings shortly before the day. A scheduled job pulls the real fixtures (and the eligible-player pool for the squad bet) automatically on December 25th.</div></div>`;
+  }else{
+    document.getElementById("fixturesTable").innerHTML=`
+      <thead><tr><th>Kickoff</th><th>Home</th><th></th><th>Away</th></tr></thead>
+      <tbody>${matches.map(m=>{
+        const d=new Date(m.kickoff);
+        const when=isNaN(d)?m.kickoff:d.toLocaleString("en-GB",{weekday:"short",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"});
+        const played=m.home_score!==""&&m.away_score!=="";
+        return `<tr><td>${when}</td><td>${m.home_team}</td><td class="vs">${played?m.home_score+' – '+m.away_score:'vs'}</td><td>${m.away_team}</td></tr>`;
+      }).join("")}</tbody>`;
+  }
 
   document.getElementById("categoriesTable").innerHTML=`
     <thead><tr><th>Category</th><th>Type</th><th>Notes</th></tr></thead>

@@ -1,11 +1,1 @@
-season,match_id,home_team,home_team_id,away_team,away_team_id,kickoff,home_score,away_score
-2026,129083,Aston Villa,2,Leeds United,9,2026-12-26T15:00:00Z,,
-2026,129084,Coventry City,5,Chelsea,4,2026-12-26T15:00:00Z,,
-2026,129085,Crystal Palace,6,Arsenal,1,2026-12-26T15:00:00Z,,
-2026,129086,Everton,7,Sunderland,29,2026-12-26T15:00:00Z,,
-2026,129087,Fulham,34,Brighton & Hove Albion,131,2026-12-26T15:00:00Z,,
-2026,129088,Hull City,41,Liverpool,10,2026-12-26T15:00:00Z,,
-2026,129089,Ipswich Town,8,Brentford,130,2026-12-26T15:00:00Z,,
-2026,129090,Manchester United,12,Nottingham Forest,15,2026-12-26T15:00:00Z,,
-2026,129091,Newcastle United,23,Manchester City,11,2026-12-26T15:00:00Z,,
-2026,129092,Tottenham Hotspur,21,Bournemouth,127,2026-12-26T15:00:00Z,,
+season,match_id,home_team,home_team_id,home_abbr,away_team,away_team_id,away_abbr,kickoff,home_score,away_score
