@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Submit — Boxing Day</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#140720;--ink-2:#1c0d2e;--panel:#231338;--panel-2:#2c1945;
+    --line:rgba(255,255,255,.08);--line-strong:rgba(255,255,255,.16);
+    --magenta:#ff2e7e;--gold:#ffc94d;--mint:#48e6c2;
+    --text:#f4ecfa;--muted:#a58ebe;--bad:#ff6b6b;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:
+      radial-gradient(1200px 600px at 82% -10%, rgba(255,46,126,.15), transparent 60%),
+      radial-gradient(900px 500px at 0% 0%, rgba(72,230,194,.09), transparent 55%),
+      var(--ink);
+    color:var(--text);font-family:'Inter',system-ui,sans-serif;line-height:1.5;
+    -webkit-font-smoothing:antialiased}
+  .wrap{max-width:1000px;margin:0 auto;padding:0 24px}
+  .disp{font-family:'Archivo',sans-serif;font-weight:900;letter-spacing:-.02em;line-height:.95}
+  .eyebrow{font-family:'Archivo',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.22em;font-size:11px;color:var(--muted)}
+
+  header{position:sticky;top:0;z-index:50;backdrop-filter:blur(12px);
+    background:linear-gradient(var(--ink),rgba(20,7,32,.55));border-bottom:1px solid var(--line)}
+  .bar{display:flex;align-items:center;justify-content:space-between;height:62px}
+  .brand{display:flex;align-items:center;gap:11px;font-family:'Archivo',sans-serif;font-weight:800;font-size:15px}
+  .brand .dot{width:12px;height:12px;border-radius:3px;background:var(--magenta);box-shadow:0 0 16px var(--magenta)}
+  header a{color:var(--muted);text-decoration:none;font-size:13px;font-weight:600}
+  header a:hover{color:var(--text)}
+
+  .hero{padding:44px 0 20px}
+  .hero h1{font-size:clamp(32px,7vw,56px);text-transform:uppercase}
+
+  section.block{padding:32px 0 4px}
+  .head h2{font-size:clamp(20px,3.5vw,26px);text-transform:uppercase;margin-bottom:14px}
+  .head .sub{color:var(--muted);font-size:13px;margin-bottom:18px}
+
+  label{display:block;font-family:'Archivo',sans-serif;font-weight:700;font-size:12px;
+    text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:6px}
+  input[type=text],input[type=number],select{
+    width:100%;background:var(--panel);color:var(--text);border:1px solid var(--line-strong);
+    border-radius:10px;padding:10px 12px;font-family:'Inter',sans-serif;font-size:14px}
+  input[type=number]{width:74px;text-align:center}
+  input:focus,select:focus{outline:2px solid var(--magenta);outline-offset:1px}
+
+  .tablewrap{border:1px solid var(--line);border-radius:16px;overflow:hidden;overflow-x:auto}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  thead th{background:var(--ink-2);text-align:left;padding:12px;font-family:'Archivo',sans-serif;
+    font-weight:700;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+  tbody td{padding:10px 12px;border-top:1px solid var(--line);vertical-align:middle}
+  .score-row td:nth-child(2),.score-row td:nth-child(4){text-align:center}
+  .vs{color:var(--muted)}
+
+  .catgrid{display:grid;grid-template-columns:1fr 1fr;gap:16px 24px}
+  @media(max-width:680px){.catgrid{grid-template-columns:1fr}}
+  .catfield{border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:14px 16px}
+  .catfield .lbl{font-size:13.5px;font-weight:600;margin-bottom:8px}
+
+  .squadbar{position:sticky;top:62px;z-index:40;background:var(--panel-2);border:1px solid var(--line);
+    border-radius:12px;padding:12px 16px;margin-bottom:18px;display:flex;flex-wrap:wrap;gap:16px;align-items:center}
+  .squadbar .n{font-family:'Archivo',sans-serif;font-weight:900}
+  .squadbar .ok{color:var(--mint)} .squadbar .warn{color:var(--gold)} .squadbar .over{color:var(--bad)}
+
+  .posgroup{margin-bottom:22px}
+  .posgroup h3{font-family:'Archivo',sans-serif;font-weight:800;font-size:13px;text-transform:uppercase;
+    letter-spacing:.06em;color:var(--muted);margin-bottom:10px}
+  .players{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px}
+  .player{border:1px solid var(--line-strong);border-radius:10px;padding:9px 12px;cursor:pointer;
+    font-size:13px;background:var(--panel);transition:all .12s}
+  .player:hover{border-color:var(--mint)}
+  .player .nm{font-weight:600}
+  .player .tm{color:var(--muted);font-size:11px}
+  .player.selected{background:rgba(72,230,194,.14);border-color:var(--mint)}
+  .player.disabled{opacity:.32;cursor:not-allowed;pointer-events:none}
+
+  .btnrow{display:flex;gap:12px;align-items:center;margin:28px 0 8px}
+  button.primary{background:var(--magenta);color:#fff;border:none;border-radius:10px;
+    padding:13px 26px;font-family:'Archivo',sans-serif;font-weight:800;font-size:14px;
+    text-transform:uppercase;letter-spacing:.04em;cursor:pointer}
+  button.primary:disabled{background:var(--panel-2);color:var(--muted);cursor:not-allowed}
+  .msg{font-size:13.5px}
+  .msg.err{color:var(--bad)} .msg.ok{color:var(--mint)}
+
+  .rec{border:1px solid var(--line);border-radius:14px;background:var(--panel);padding:20px;margin-bottom:16px}
+  .rec .cap{font-family:'Archivo',sans-serif;font-weight:700;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  .rec .det{font-size:13.5px;color:var(--muted);margin-top:6px}
+  pre{white-space:pre-wrap;word-break:break-word;background:var(--ink-2);border-radius:10px;padding:14px;font-size:12px;color:var(--muted)}
+
+  footer{border-top:1px solid var(--line);margin-top:60px;padding:24px 0 50px;color:var(--muted);font-size:12.5px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap bar">
+    <div class="brand"><span class="dot"></span> BOXING DAY</div>
+    <a href="index.html">&larr; Back to overview</a>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="hero">
+    <div class="eyebrow" id="yearLabel">Loading…</div>
+    <h1 class="disp">Submit your sheet</h1>
+  </section>
+
+  <div id="formRoot"></div>
+</main>
+
+<footer><div class="wrap">Boxing Day · one submission per player per year</div></footer>
+
+<script>
+"use strict";
+
+function parseCSV(txt){
+  const lines=txt.trim().split(/\r?\n/);
+  if(!lines[0])return[];
+  const head=lines[0].split(",");
+  return lines.slice(1).filter(l=>l.length).map(l=>{
+    const c=[];let cur="",inQ=false;
+    for(let i=0;i<l.length;i++){const ch=l[i];
+      if(ch==='"'){inQ=!inQ;}
+      else if(ch===","&&!inQ){c.push(cur);cur="";}
+      else cur+=ch;
+    }
+    c.push(cur);
+    const o={};head.forEach((h,i)=>o[h]=c[i]!==undefined?c[i]:"");return o;
+  });
+}
+async function loadCSV(path){
+  const res=await fetch(path);
+  if(!res.ok)throw new Error(`Failed to load ${path} (HTTP ${res.status})`);
+  return parseCSV(await res.text());
+}
+
+// Fill in once the Cloudflare Worker is deployed. Until then, submissions
+// are shown on-page instead of sent anywhere, so the form itself can be
+// tested end-to-end without a live backend.
+const WORKER_URL = "";
+
+const SQUAD_RULES={GKP:{min:1,max:1},DEF:{min:3,max:5},MID:{min:3,max:5},FWD:{min:1,max:3}};
+const SQUAD_SIZE=11;
+const MAX_PER_CLUB=3;
+
+(async function(){
+  let matches,categories,players;
+  try{
+    [matches,categories,players]=await Promise.all([
+      loadCSV("data/matches.csv"),loadCSV("data/categories.csv"),loadCSV("data/eligible-players.csv"),
+    ]);
+  }catch(err){
+    document.getElementById("formRoot").innerHTML=`<div class="rec"><div class="cap">Couldn't load data</div><div class="det">${err.message}<br><br>If you opened this file directly from disk, run a local server instead — e.g. <code>python -m http.server</code> — then open the printed http://localhost address.</div></div>`;
+    return;
+  }
+
+  const year=matches[0]?.season||new Date().getUTCFullYear();
+  document.getElementById("yearLabel").textContent=`Boxing Day ${year}`;
+
+  if(!matches.length||!players.length){
+    document.getElementById("formRoot").innerHTML=`<div class="rec"><div class="cap">Submissions aren't open yet</div><div class="det">Fixtures and the eligible-player pool are pulled automatically on December 25th, the day before Boxing Day. Come back then.</div></div>`;
+    return;
+  }
+
+  const teams=[...new Map(matches.flatMap(m=>[[m.home_abbr,m.home_team],[m.away_abbr,m.away_team]])).entries()]
+    .sort((a,b)=>a[1].localeCompare(b[1]));
+
+  const state={playerName:"",scores:{},answers:{},squad:new Set()};
+
+  function squadCounts(){
+    const byPos={GKP:0,DEF:0,MID:0,FWD:0},byTeam={};
+    state.squad.forEach(id=>{
+      const p=players.find(x=>x.element_id===id);if(!p)return;
+      byPos[p.position]=(byPos[p.position]||0)+1;
+      byTeam[p.team]=(byTeam[p.team]||0)+1;
+    });
+    return{byPos,byTeam};
+  }
+  function canAdd(p){
+    if(state.squad.has(p.element_id))return false;
+    if(state.squad.size>=SQUAD_SIZE)return false;
+    const{byPos,byTeam}=squadCounts();
+    if((byPos[p.position]||0)>=SQUAD_RULES[p.position].max)return false;
+    if((byTeam[p.team]||0)>=MAX_PER_CLUB)return false;
+    return true;
+  }
+  function squadValid(){
+    if(state.squad.size!==SQUAD_SIZE)return false;
+    const{byPos}=squadCounts();
+    return Object.entries(SQUAD_RULES).every(([pos,r])=>{
+      const n=byPos[pos]||0;return n>=r.min&&n<=r.max;
+    });
+  }
+
+  function renderSquadBar(){
+    const{byPos}=squadCounts();
+    const cls=n=>state.squad.size===SQUAD_SIZE?(squadValid()?'ok':'over'):'warn';
+    document.getElementById("squadBar").innerHTML=
+      `<span class="n ${cls()}">${state.squad.size}/${SQUAD_SIZE}</span>`+
+      Object.entries(SQUAD_RULES).map(([pos,r])=>{
+        const n=byPos[pos]||0;
+        const c=n<r.min?'warn':(n>r.max?'over':'ok');
+        return `<span>${pos} <span class="n ${c}">${n}</span> <span style="color:var(--muted)">(${r.min}–${r.max})</span></span>`;
+      }).join("");
+  }
+
+  function renderPlayers(){
+    const groups=["GKP","DEF","MID","FWD"];
+    const names={GKP:"Goalkeepers",DEF:"Defenders",MID:"Midfielders",FWD:"Forwards"};
+    document.getElementById("squadPickers").innerHTML=groups.map(pos=>{
+      const list=players.filter(p=>p.position===pos).sort((a,b)=>a.team.localeCompare(b.team)||a.name.localeCompare(b.name));
+      return `<div class="posgroup"><h3>${names[pos]}</h3><div class="players">`+
+        list.map(p=>{
+          const sel=state.squad.has(p.element_id);
+          const dis=!sel&&!canAdd(p);
+          return `<div class="player ${sel?'selected':''} ${dis?'disabled':''}" data-id="${p.element_id}">
+            <div class="nm">${p.name}</div><div class="tm">${p.team} · ${p.position}</div></div>`;
+        }).join("")+`</div></div>`;
+    }).join("");
+    document.querySelectorAll(".player").forEach(el=>{
+      el.onclick=()=>{
+        const id=el.dataset.id;
+        if(state.squad.has(id))state.squad.delete(id);
+        else{const p=players.find(x=>x.element_id===id);if(p&&canAdd(p))state.squad.add(id);}
+        renderSquadBar();renderPlayers();
+      };
+    });
+  }
+
+  function catInput(c){
+    if(c.type==="number")
+      return `<input type="number" min="0" data-cat="${c.id}">`;
+    if(c.type==="team_pick")
+      return `<select data-cat="${c.id}"><option value="">Select a team…</option>${teams.map(([abbr,name])=>`<option value="${abbr}">${name}</option>`).join("")}</select>`;
+    if(c.type==="match_pick")
+      return `<select data-cat="${c.id}"><option value="">Select a match…</option>${matches.map(m=>`<option value="${m.match_id}">${m.home_team} vs ${m.away_team}</option>`).join("")}</select>`;
+    if(c.type==="player_pick"){
+      const pool=c.position_filter?players.filter(p=>p.position===c.position_filter):players;
+      return `<select data-cat="${c.id}"><option value="">Select a player…</option>${pool.map(p=>`<option value="${p.element_id}">${p.name} (${p.team})</option>`).join("")}</select>`;
+    }
+    return "";
+  }
+
+  const otherCats=categories.filter(c=>c.type!=="match_score"&&c.type!=="fpl_squad");
+  const squadCat=categories.find(c=>c.type==="fpl_squad");
+
+  document.getElementById("formRoot").innerHTML=`
+    <section class="block">
+      <div class="head"><h2 class="disp">Your name</h2></div>
+      <input type="text" id="playerName" placeholder="e.g. Kriss" style="max-width:320px">
+    </section>
+
+    <section class="block">
+      <div class="head"><h2 class="disp">Kamper</h2><div class="sub">Predict the exact score of every match</div></div>
+      <div class="tablewrap"><table>
+        <tbody>${matches.map(m=>`<tr class="score-row">
+          <td>${m.home_team}</td>
+          <td><input type="number" min="0" max="20" data-match="${m.match_id}" data-side="home"></td>
+          <td class="vs">–</td>
+          <td><input type="number" min="0" max="20" data-match="${m.match_id}" data-side="away"></td>
+          <td>${m.away_team}</td>
+        </tr>`).join("")}</tbody>
+      </table></div>
+    </section>
+
+    <section class="block">
+      <div class="head"><h2 class="disp">Other bets</h2></div>
+      <div class="catgrid">${otherCats.map(c=>`
+        <div class="catfield"><div class="lbl">${c.label_no}</div>${catInput(c)}</div>
+      `).join("")}</div>
+    </section>
+
+    <section class="block">
+      <div class="head"><h2 class="disp">${squadCat.label_no}</h2><div class="sub">1 GK · 3–5 DEF · 3–5 MID · 1–3 FWD · max 3 per club · 11 total</div></div>
+      <div class="squadbar" id="squadBar"></div>
+      <div id="squadPickers"></div>
+    </section>
+
+    <div class="btnrow">
+      <button class="primary" id="submitBtn">Submit sheet</button>
+      <span class="msg" id="formMsg"></span>
+    </div>
+    <div id="resultBox"></div>
+  `;
+
+  renderSquadBar();
+  renderPlayers();
+
+  document.getElementById("submitBtn").onclick=async()=>{
+    const msg=document.getElementById("formMsg");
+    msg.className="msg";msg.textContent="";
+
+    const playerName=document.getElementById("playerName").value.trim();
+    if(!playerName){msg.className="msg err";msg.textContent="Enter your name.";return;}
+
+    const scores=[];
+    for(const m of matches){
+      const h=document.querySelector(`input[data-match="${m.match_id}"][data-side="home"]`).value;
+      const a=document.querySelector(`input[data-match="${m.match_id}"][data-side="away"]`).value;
+      if(h===""||a===""){msg.className="msg err";msg.textContent=`Predict a score for ${m.home_team} vs ${m.away_team}.`;return;}
+      scores.push({match_id:m.match_id,home:+h,away:+a});
+    }
+
+    const answers=[];
+    for(const c of otherCats){
+      const el=document.querySelector(`[data-cat="${c.id}"]`);
+      const v=el.value;
+      if(v===""){msg.className="msg err";msg.textContent=`Answer "${c.label_no}".`;return;}
+      answers.push({category_id:c.id,answer:v});
+    }
+
+    if(!squadValid()){msg.className="msg err";msg.textContent="Your squad doesn't meet the position rules yet (see counters above).";return;}
+
+    const payload={
+      season:year,player_name:playerName,submitted_at:new Date().toISOString(),
+      scores,answers,squad:[...state.squad],
+    };
+
+    if(!WORKER_URL){
+      document.getElementById("resultBox").innerHTML=`<div class="rec"><div class="cap">No backend deployed yet</div><div class="det">This is the payload that would be sent. Once the submission backend is live, this form will POST it there instead.</div><pre>${JSON.stringify(payload,null,2)}</pre></div>`;
+      msg.className="msg ok";msg.textContent="Payload built successfully (see below) — nothing was actually submitted.";
+      return;
+    }
+
+    msg.textContent="Submitting…";
+    try{
+      const res=await fetch(WORKER_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});
+      if(!res.ok)throw new Error(`Server responded ${res.status}`);
+      msg.className="msg ok";msg.textContent="Submitted! You can resubmit any time before kickoff to overwrite your answers.";
+    }catch(err){
+      msg.className="msg err";msg.textContent=`Couldn't submit: ${err.message}`;
+    }
+  };
+})();
+</script>
+</body>
+</html>

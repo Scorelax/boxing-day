@@ -1,18 +1,18 @@
-id,label_no,type,notes
-kamper,Kamper,match_score,"One exact-score prediction per Boxing Day match (see matches.csv), not a single category"
-gule_kort,Riktig antall gule kort,number,Total yellow cards across all matches
-rode_kort,Riktig antall røde kort,number,Total red cards across all matches
-straffer,Riktig antall straffer,number,Total penalties awarded across all matches
-lag_flest_gule,Lag med flest gule kort,team_pick,Pick one team from the pool of clubs playing
-kamp_flest_kort,Kamp med flest kort,match_pick,Pick one of the day's matches
-lag_flest_scoringer,Lag med flest scoringer,team_pick,Pick one team from the pool of clubs playing
-kamp_flest_scoringer,Kamp med flest scoringer,match_pick,Pick one of the day's matches
-clean_sheets,Totalt antall clean sheets,number,Total clean sheets across all matches
-totalt_mal,Totalt antall mål,number,Total goals across all matches
-spiller_mest_fpl,Spiller med mest FPL poeng,player_pick,Pick one player from the pool of eligible players
-keeper_flest_saves,Keeper med flest saves (FPL),player_pick,Pick one goalkeeper from the pool of eligible players
-kamp_flest_skudd,Kamp med flest skudd,match_pick,Pick one of the day's matches
-kamp_flest_pasninger,Kamp med flest pasninger,match_pick,Pick one of the day's matches
-hoyeste_ballbesittelse,Høyeste ballbesittelse (%),team_pick,Pick one team from the pool of clubs playing
-fpl_score,FPL score,fpl_squad,"Combined FPL points of the player's own 11-player squad, see FPL squad rules in README"
-var_omgjoringer,Antall VAR-omgjøringer,number,Total VAR overturns across all matches
+id,label_no,type,position_filter,notes
+kamper,Kamper,match_score,,"One exact-score prediction per Boxing Day match (see matches.csv), not a single category"
+gule_kort,Riktig antall gule kort,number,,Total yellow cards across all matches
+rode_kort,Riktig antall røde kort,number,,Total red cards across all matches
+straffer,Riktig antall straffer,number,,Total penalties awarded across all matches
+lag_flest_gule,Lag med flest gule kort,team_pick,,Pick one team from the pool of clubs playing
+kamp_flest_kort,Kamp med flest kort,match_pick,,Pick one of the day's matches
+lag_flest_scoringer,Lag med flest scoringer,team_pick,,Pick one team from the pool of clubs playing
+kamp_flest_scoringer,Kamp med flest scoringer,match_pick,,Pick one of the day's matches
+clean_sheets,Totalt antall clean sheets,number,,Total clean sheets across all matches
+totalt_mal,Totalt antall mål,number,,Total goals across all matches
+spiller_mest_fpl,Spiller med mest FPL poeng,player_pick,,Pick one player from the pool of eligible players
+keeper_flest_saves,Keeper med flest saves (FPL),player_pick,GKP,Pick one goalkeeper from the pool of eligible players
+kamp_flest_skudd,Kamp med flest skudd,match_pick,,Pick one of the day's matches
+kamp_flest_pasninger,Kamp med flest pasninger,match_pick,,Pick one of the day's matches
+hoyeste_ballbesittelse,Høyeste ballbesittelse (%),team_pick,,Pick one team from the pool of clubs playing
+fpl_score,FPL score,fpl_squad,,"Combined FPL points of the player's own 11-player squad, see FPL squad rules in README"
+var_omgjoringer,Antall VAR-omgjøringer,number,,Total VAR overturns across all matches

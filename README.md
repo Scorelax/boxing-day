@@ -2,12 +2,13 @@
 
 A yearly prediction pool built around the Premier League's Boxing Day fixtures. Every player predicts match scores plus a set of stat-based bets, and picks an 11-player fantasy squad (drawn only from clubs actually playing that day) whose combined FPL points becomes its own bet category. Static site + GitHub-hosted data, same philosophy as [fpl-draft-stats](https://github.com/Scorelax/fpl-draft-stats): the `data/` folder is the database, the app computes everything from it.
 
-**Live site:** https://scorelax.github.io/boxing-day/ (scaffold only for now — see Status below)
+**Live site:** https://scorelax.github.io/boxing-day/ (see Status below — the submission form has no backend to submit to yet)
 
 ## Structure
 
 ```
-index.html      the app (currently a lightweight scaffold — see Status)
+index.html      overview: fixtures + categories + squad rules
+submit.html      the submission form (squad picker + all 16 other bets)
 data/
   matches.csv             this year's Boxing Day fixtures — empty until Dec 25 (see below)
   eligible-players.csv     pool of players the squad bet can pick from — same
@@ -45,7 +46,7 @@ The 17 things players predict each year, with a `type` telling the app (and even
 | `player_pick` | Pick one player from the pool of eligible players (players on clubs playing that day) |
 | `fpl_squad` | The one-time fantasy squad bet — see below |
 
-Categories are in Norwegian (`label_no`) since that's the language the group actually uses.
+Categories are in Norwegian (`label_no`) since that's the language the group actually uses. A `position_filter` column (e.g. `GKP` on the keeper-saves category) narrows the player pool `submit.html` offers for that one category.
 
 ## The FPL squad bet ("FPL score")
 
@@ -61,12 +62,26 @@ Each player also drafts a one-time, one-day fantasy XI. The category's score is 
 
 ## Status
 
-This repo is scaffolding, set up ahead of the 2026-12-26 event while the plan is fresh. Built: fixture/eligible-player fetching (above). Not built yet:
+This repo is scaffolding, set up ahead of the 2026-12-26 event while the plan is fresh. Built: fixture/eligible-player fetching (above), and the submission form itself (`submit.html`) — a squad picker enforcing the position/club-limit rules live (disables a player the moment picking them would break a rule, with a running counter) plus inputs for the other 16 categories, all driven off `categories.csv` so a category can be added/changed without touching the form's code.
 
-1. **The submission form itself** — a squad picker (enforcing the position/club-limit rules above, filtered to `eligible-players.csv`) plus inputs for the other 16 categories. Decided approach: a small **Cloudflare Worker** that receives submissions and commits them to this repo via the GitHub API, so `data/` stays the single source of truth rather than introducing a separate database.
-2. **`data/submissions.csv`** — one row per player per category per year. Schema not finalized until the form exists, to avoid designing it twice.
-3. **`data/results.csv`** — the actual correct answers per year, filled in as Boxing Day plays out, likely semi-automated (see below).
-4. **The stats/leaderboard page itself** (who guessed what right, standings) — build once there's real submission data to show.
+Not built yet:
+
+1. **The backend that receives a submission.** `submit.html` currently has nowhere to send its payload — decided approach: a small **Cloudflare Worker** that receives it and commits rows to `data/submissions.csv` via the GitHub API, so `data/` stays the single source of truth rather than introducing a separate database. Node + `wrangler` (Cloudflare's CLI) are installed; still need Cloudflare + GitHub credentials to actually deploy it, and to wire the deployed URL into `submit.html`'s `WORKER_URL` constant. Until then, hitting Submit just shows the assembled payload on-page instead of sending it anywhere, so the form itself is fully testable without a live backend.
+2. **`data/results.csv`** — the actual correct answers per year, filled in as Boxing Day plays out, likely semi-automated (see below).
+3. **The stats/leaderboard page itself** (who guessed what right, standings) — build once there's real submission data to show.
+
+### `data/submissions.csv` schema (once the backend exists)
+
+One row per **answer**, not per submission — a "long" format so adding a category later never requires a schema migration:
+
+| column | meaning |
+|---|---|
+| `season` | e.g. `2026` |
+| `player_name` | who submitted |
+| `submitted_at` | ISO timestamp; a resubmission before kickoff replaces the player's prior rows for that season |
+| `category_id` | matches `categories.csv`'s `id` |
+| `ref_id` | the match a `kamper` score belongs to (blank for every other category) |
+| `answer` | the guess itself: `"2-1"` for a score, a plain number, a team/club abbreviation, a `match_id`, an `element_id` — or, for `fpl_score`, all 11 selected `element_id`s joined with `;` |
 
 ### Live match data
 

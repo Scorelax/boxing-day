@@ -27,7 +27,10 @@
 
   header{position:sticky;top:0;z-index:50;backdrop-filter:blur(12px);
     background:linear-gradient(var(--ink),rgba(20,7,32,.55));border-bottom:1px solid var(--line)}
-  .bar{display:flex;align-items:center;gap:11px;height:62px;font-family:'Archivo',sans-serif;font-weight:800;font-size:15px}
+  .bar{display:flex;align-items:center;justify-content:space-between;height:62px}
+  .brand{display:flex;align-items:center;gap:11px;font-family:'Archivo',sans-serif;font-weight:800;font-size:15px}
+  header a{color:var(--muted);text-decoration:none;font-size:13px;font-weight:600}
+  header a:hover{color:var(--text)}
   .bar .dot{width:12px;height:12px;border-radius:3px;background:var(--magenta);box-shadow:0 0 16px var(--magenta)}
 
   .hero{padding:56px 0 30px}
@@ -60,7 +63,10 @@
 <body>
 
 <header>
-  <div class="wrap bar"><span class="dot"></span> BOXING DAY</div>
+  <div class="wrap bar">
+    <div class="brand"><span class="dot"></span> BOXING DAY</div>
+    <a href="submit.html">Submit your sheet &rarr;</a>
+  </div>
 </header>
 
 <main class="wrap">
