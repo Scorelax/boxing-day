@@ -1,4 +1,4 @@
-# Boxing Day Bets
+# Boxing Day
 
 A yearly prediction pool built around the Premier League's Boxing Day fixtures. Every player predicts match scores plus a set of stat-based bets, and picks an 11-player fantasy squad (drawn only from clubs actually playing that day) whose combined FPL points becomes its own bet category. Static site + GitHub-hosted data, same philosophy as [fpl-draft-stats](https://github.com/Scorelax/fpl-draft-stats): the `data/` folder is the database, the app computes everything from it.
 
