@@ -27,14 +27,17 @@ jobs:
           BOXING_DAY_YEAR: ${{ github.event.inputs.year }}
         run: python scripts/fetch_boxing_day.py
 
+      - name: Generate the submission issue form
+        run: python scripts/generate_submission_form.py
+
       - name: Commit and push if changed
         run: |
-          if git diff --quiet -- data/matches.csv data/eligible-players.csv; then
+          if git diff --quiet -- data/matches.csv data/eligible-players.csv .github/ISSUE_TEMPLATE/boxing-day-submission.yml; then
             echo "No changes."
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/matches.csv data/eligible-players.csv
-          git commit -m "Fetch Boxing Day fixtures + eligible players: $(date -u +%Y)"
+          git add data/matches.csv data/eligible-players.csv .github/ISSUE_TEMPLATE/boxing-day-submission.yml
+          git commit -m "Fetch Boxing Day fixtures + eligible players, regenerate submission form: $(date -u +%Y)"
           git push

@@ -65,7 +65,7 @@
 <header>
   <div class="wrap bar">
     <div class="brand"><span class="dot"></span> BOXING DAY</div>
-    <a href="submit.html">Submit your sheet &rarr;</a>
+    <a id="submitLink" href="#" style="visibility:hidden">Submit your sheet &rarr;</a>
   </div>
 </header>
 
@@ -92,6 +92,13 @@
       <div class="who">1 GK · 3–5 DEF · 3–5 MID · 1–3 FWD</div>
       <div class="det">Max 3 players from any single club. Only players from clubs playing on Boxing Day are eligible. The category score is that squad's combined FPL points from the day's matches.</div>
     </div>
+  </section>
+
+  <section class="block" id="eligibleSection" style="display:none">
+    <div class="head"><h2 class="disp">Eligible players</h2></div>
+    <div class="det" style="color:var(--muted);margin-bottom:14px">When submitting, use the exact "Full Name (CLUB)" spelling shown here.</div>
+    <input type="text" id="playerFilter" placeholder="Filter by name or club…" style="width:100%;max-width:340px;background:var(--panel);color:var(--text);border:1px solid var(--line-strong);border-radius:10px;padding:10px 12px;font-size:14px;margin-bottom:14px">
+    <div class="tablewrap"><table id="playersTable"></table></div>
   </section>
 </main>
 
@@ -120,10 +127,14 @@ async function loadCSV(path){
 }
 const TYPE_LABEL={match_score:"score",number:"number",team_pick:"team",match_pick:"match",player_pick:"player",fpl_squad:"squad"};
 
+const GH_REPO="Scorelax/boxing-day";
+
 (async function(){
-  let matches,categories;
+  let matches,categories,players;
   try{
-    [matches,categories]=await Promise.all([loadCSV("data/matches.csv"),loadCSV("data/categories.csv")]);
+    [matches,categories,players]=await Promise.all([
+      loadCSV("data/matches.csv"),loadCSV("data/categories.csv"),loadCSV("data/eligible-players.csv"),
+    ]);
   }catch(err){
     document.querySelector("main").innerHTML=`<div class="rec" style="margin:60px 0"><div class="cap">Couldn't load data</div><div class="det">${err.message}<br><br>If you opened this file directly from disk, run a local server instead — e.g. <code>python -m http.server</code> — then open the printed http://localhost address.</div></div>`;
     return;
@@ -146,6 +157,10 @@ const TYPE_LABEL={match_score:"score",number:"number",team_pick:"team",match_pic
         const played=m.home_score!==""&&m.away_score!=="";
         return `<tr><td>${when}</td><td>${m.home_team}</td><td class="vs">${played?m.home_score+' – '+m.away_score:'vs'}</td><td>${m.away_team}</td></tr>`;
       }).join("")}</tbody>`;
+
+    const link=document.getElementById("submitLink");
+    link.href=`https://github.com/${GH_REPO}/issues/new?template=boxing-day-submission.yml&labels=boxing-day-submission`;
+    link.style.visibility="visible";
   }
 
   document.getElementById("categoriesTable").innerHTML=`
@@ -153,6 +168,19 @@ const TYPE_LABEL={match_score:"score",number:"number",team_pick:"team",match_pic
     <tbody>${categories.map(c=>
       `<tr><td>${c.label_no}</td><td><span class="tag ${c.type==='number'?'number':c.type==='fpl_squad'?'squad':''}">${TYPE_LABEL[c.type]||c.type}</span></td><td>${c.notes}</td></tr>`
     ).join("")}</tbody>`;
+
+  if(players.length){
+    document.getElementById("eligibleSection").style.display="";
+    const renderPlayers=(filter="")=>{
+      const f=filter.trim().toLowerCase();
+      const rows=players.filter(p=>!f||p.name.toLowerCase().includes(f)||p.team.toLowerCase().includes(f));
+      document.getElementById("playersTable").innerHTML=`
+        <thead><tr><th>Name</th><th>Position</th><th>Club</th></tr></thead>
+        <tbody>${rows.map(p=>`<tr><td>${p.name} (${p.team})</td><td>${p.position}</td><td>${p.team}</td></tr>`).join("")}</tbody>`;
+    };
+    renderPlayers();
+    document.getElementById("playerFilter").oninput=e=>renderPlayers(e.target.value);
+  }
 })();
 </script>
 </body>
