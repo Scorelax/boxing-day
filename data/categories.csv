@@ -13,6 +13,6 @@ spiller_mest_fpl,Player with most FPL points,Spiller med mest FPL poeng,player_p
 keeper_flest_saves,Goalkeeper with most saves (FPL),Keeper med flest saves (FPL),player_pick,GKP,2,Pick one goalkeeper from the pool of eligible players
 kamp_flest_skudd,Match with most shots,Kamp med flest skudd,match_pick,,2,Pick one of the day's matches
 kamp_flest_pasninger,Match with most passes,Kamp med flest pasninger,match_pick,,2,Pick one of the day's matches
-hoyeste_ballbesittelse,Highest possession (%),Høyeste ballbesittelse (%),team_pick,,4,Pick one team from the pool of clubs playing
+hoyeste_ballbesittelse,Highest possession (%),Høyeste ballbesittelse (%),number,,4,"Highest single-team possession % across all matches, as a whole number - round down (66.9% counts as 66)"
 fpl_score,FPL score,FPL score,fpl_squad,,3,Combined FPL squad points
 var_omgjoringer,Number of VAR overturns,Antall VAR-omgjøringer,number,,2,Total VAR overturns across all matches
