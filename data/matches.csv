@@ -14,3 +14,8 @@ season,match_id,home_team,home_team_id,home_abbr,away_team,away_team_id,away_abb
 2024/25,2024_SOU_WHU,Southampton,20,SOU,West Ham United,25,WHU,"Thu 26 Dec 2024, 15:00 GMT",0,1
 2024/25,2024_WOL_MUN,Wolverhampton Wanderers,38,WOL,Manchester United,12,MUN,"Thu 26 Dec 2024, 17:30 GMT",2,0
 2024/25,2024_LIV_LEI,Liverpool,10,LIV,Leicester City,26,LEI,"Thu 26 Dec 2024, 20:00 GMT",3,1
+2023/24,2023_NEW_NFO,Newcastle United,23,NEW,Nottingham Forest,15,NFO,"Tue 26 Dec 2023, 15:00 GMT",1,3
+2023/24,2023_BOU_FUL,Bournemouth,127,BOU,Fulham,34,FUL,"Tue 26 Dec 2023, 15:00 GMT",3,0
+2023/24,2023_SHU_LUT,Sheffield United,18,SHU,Luton Town,163,LUT,"Tue 26 Dec 2023, 15:00 GMT",2,3
+2023/24,2023_BUR_LIV,Burnley,43,BUR,Liverpool,10,LIV,"Tue 26 Dec 2023, 15:00 GMT",0,2
+2023/24,2023_MUN_AVL,Manchester United,12,MUN,Aston Villa,2,AVL,"Tue 26 Dec 2023, 15:00 GMT",3,2
