@@ -73,12 +73,12 @@ def main():
 
     year = season
     team_names = sorted({m["home_team"] for m in matches} | {m["away_team"] for m in matches})
-    match_labels = [f'{m["home_team"]} vs {m["away_team"]}' for m in matches]
+    match_labels = [f'{m["home_abbr"]} vs {m["away_abbr"]}' for m in matches]
 
     fields = [field_input("player_name", "Your name [[player_name]]", "e.g. Kriss")]
 
     for m in matches:
-        label = f'{m["home_team"]} vs {m["away_team"]} — predicted score [[kamper:{m["match_id"]}]]'
+        label = f'{m["home_abbr"]} vs {m["away_abbr"]} — predicted score [[kamper:{m["match_id"]}]]'
         fields.append(field_input(f'kamper_{m["match_id"]}', label, "e.g. 2-1"))
 
     for c in categories:

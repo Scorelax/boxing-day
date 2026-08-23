@@ -108,7 +108,7 @@ def main():
 
     by_name_team = {(p["name"].strip().lower(), p["team"].strip().upper()): p for p in players}
     team_names = {m["home_team"] for m in matches} | {m["away_team"] for m in matches}
-    match_by_label = {f'{m["home_team"]} vs {m["away_team"]}': m["match_id"] for m in matches}
+    match_by_label = {f'{m["home_abbr"]} vs {m["away_abbr"]}': m["match_id"] for m in matches}
 
     def lookup_player(text, position_filter=None):
         text = text.strip()

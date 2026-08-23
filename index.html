@@ -186,12 +186,12 @@ function scoreMatch(pred,actual){
     const names=Object.keys(byPlayer).sort();
     const find=(rows,catId,refId)=>rows.find(r=>r.category_id===catId&&(refId===undefined||r.ref_id===refId));
     const resultRow=(catId,refId="")=>seasonResults.find(r=>r.category_id===catId&&r.ref_id===refId);
-    const matchLabel=id=>{const m=seasonMatches.find(x=>x.match_id===id);return m?`${m.home_team} vs ${m.away_team}`:id;};
+    const matchLabel=id=>{const m=seasonMatches.find(x=>x.match_id===id);return m?`${m.home_abbr} vs ${m.away_abbr}`:id;};
     const playerLabel=id=>{const p=seasonPlayers.find(x=>x.element_id===id);return p?`${p.name} (${p.team})`:id;};
 
     const kamperLines=seasonMatches.map(m=>{
       const actual=resultRow("kamper",m.match_id);
-      return{label:`${m.home_team} vs ${m.away_team}`,cell:n=>{
+      return{label:`${m.home_abbr} vs ${m.away_abbr}`,cell:n=>{
         const sub=find(byPlayer[n],"kamper",m.match_id);
         if(!sub)return{text:"–",pts:null};
         const pts=(actual&&actual.answer)?scoreMatch(sub.answer,actual.answer):null;
