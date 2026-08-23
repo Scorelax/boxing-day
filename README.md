@@ -120,6 +120,8 @@ One row per **answer**, not per submission — a "long" format so adding a categ
 | `answer` | the guess itself: `"2-1"` for a score, a plain number, a team/club name, a `match_id`, an `element_id` — or, for `fpl_score`, all 11 selected `element_id`s joined with `;` |
 | `issue_number` | which submission issue this row came from — a resubmission replaces only that issue's own prior rows |
 
+`fpl_score`'s `answer` also accepts a **single bare number** instead of 11 `element_id`s - the season's total is used directly rather than summed from `player-points.csv`. This is for importing historical data where only a squad's final total was recorded, not its individual players (e.g. `2025/26`, imported from a spreadsheet that only tracked totals) - going forward, real submissions always carry the full 11-player breakdown, since that's what the form actually collects.
+
 ## `data/results.csv` and `data/player-points.csv` schemas
 
 `results.csv`: `season, category_id, ref_id, answer` - one row per match (`category_id=kamper`, `ref_id=<match_id>`, `answer="H-A"`) plus one row per other category except `fpl_score` (`ref_id` blank), in the exact same `answer` format submissions use (a team/club name, a `match_id`, an `element_id`) so they compare equal. Currently filled in **by hand** after Boxing Day - no automated pipeline yet (see Status).
@@ -147,7 +149,13 @@ This repo is scaffolding, set up ahead of the 2026-12-26 event while the plan is
 Not built yet:
 
 1. **Automated `results.csv` / `player-points.csv` filling.** Both are hand-edited after Boxing Day for now. The data needed exists (see "Live match data" below), but writing the fetch script is future work - realistically once we're closer to actually needing it, since some of that data source's specifics (penalties, VAR overturns, and the FPL `multiplier` field's exact behavior) still need verifying against real finished matches/gameweeks first.
-2. **Historical data for past seasons** (before this one) - the group has results tracked in a Google Sheet going back further; importing that is a separate step once it's provided.
+2. **Historical data for seasons before `2025/26`** - the group has results tracked further back in a Google Sheet; importing those is a separate step once provided.
+
+### `2025/26` import
+
+Imported from the group's spreadsheet as the first real test of the whole system end-to-end - matches, all 4 players' full submissions, and every result that could be either read straight from that sheet or cross-checked against the real Premier League match data. All 4 players' final totals (Kriss 12, Seb 11, Simon 16, Morten 10) were recomputed by the site's actual scoring code from scratch and matched the spreadsheet exactly, which is strong end-to-end confirmation the whole pipeline - import, scoring, ranking, Overview/History rendering - is correct.
+
+Left unrecorded in `results.csv` (nobody's spreadsheet answer was correct, so there's no way to reverse-engineer the true value from points alone, and the relevant match/gameweek stats aren't available from the free data sources used elsewhere in this project - a scorer needs to supply these directly): `straffer` (penalties), `spiller_mest_fpl`, `keeper_flest_saves`, `var_omgjoringer`. Also flagged: `hoyeste_ballbesittelse` was answered with a raw percentage number in the spreadsheet, not a team name - doesn't match this category's `team_pick` type as currently defined, worth clarifying which was actually intended before recording a result for it.
 
 ### Live match data
 

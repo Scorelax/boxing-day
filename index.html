@@ -218,7 +218,13 @@ function scoreMatch(pred,actual){
     const fplTotals={};
     names.forEach(n=>{
       const sub=find(byPlayer[n],"fpl_score");
-      const ids=sub?sub.answer.split(";").filter(Boolean):[];
+      if(!sub){fplTotals[n]=null;return;}
+      const ids=sub.answer.split(";").filter(Boolean);
+      if(ids.length===1&&!isNaN(+ids[0])){
+        // pre-computed total (e.g. imported historical data with no per-player breakdown)
+        fplTotals[n]=+ids[0];
+        return;
+      }
       const allKnown=seasonPoints.length>0&&ids.length===11&&ids.every(id=>ptsById[id]!==undefined);
       fplTotals[n]=allKnown?ids.reduce((s,id)=>s+ptsById[id],0):null;
     });
@@ -271,6 +277,9 @@ function scoreMatch(pred,actual){
     const squadBlocks=names.map(n=>{
       const sub=byPlayer[n].find(r=>r.category_id==="fpl_score");
       const ids=sub?sub.answer.split(";").filter(Boolean):[];
+      if(ids.length===1&&!isNaN(+ids[0])){
+        return `<div class="rec"><div class="cap">${n}</div><div class="det">Total: ${ids[0]}pts (individual breakdown not tracked)</div></div>`;
+      }
       const squad=ids.map(id=>seasonPlayers.find(p=>p.element_id===id)).filter(Boolean);
       const byPos={GKP:[],DEF:[],MID:[],FWD:[]};
       squad.forEach(p=>{if(byPos[p.position])byPos[p.position].push(p);});

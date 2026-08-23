@@ -1,0 +1,93 @@
+season,player_name,submitted_at,category_id,ref_id,answer,issue_number
+2025/26,Kriss,2025-12-20T00:00:00+00:00,kamper,124968,1-3,manual
+2025/26,Kriss,2025-12-20T00:00:00+00:00,kamper,124961,4-0,manual
+2025/26,Kriss,2025-12-20T00:00:00+00:00,kamper,124962,1-1,manual
+2025/26,Kriss,2025-12-20T00:00:00+00:00,kamper,124963,0-2,manual
+2025/26,Kriss,2025-12-20T00:00:00+00:00,kamper,124966,3-0,manual
+2025/26,Kriss,2025-12-20T00:00:00+00:00,kamper,124970,1-1,manual
+2025/26,Kriss,2025-12-20T00:00:00+00:00,kamper,124964,2-2,manual
+2025/26,Kriss,2025-12-20T00:00:00+00:00,gule_kort,,21,manual
+2025/26,Kriss,2025-12-20T00:00:00+00:00,rode_kort,,1,manual
+2025/26,Kriss,2025-12-20T00:00:00+00:00,straffer,,3,manual
+2025/26,Kriss,2025-12-20T00:00:00+00:00,lag_flest_gule,,Chelsea,manual
+2025/26,Kriss,2025-12-20T00:00:00+00:00,kamp_flest_kort,,124964,manual
+2025/26,Kriss,2025-12-20T00:00:00+00:00,lag_flest_scoringer,,Arsenal,manual
+2025/26,Kriss,2025-12-20T00:00:00+00:00,kamp_flest_scoringer,,124964,manual
+2025/26,Kriss,2025-12-20T00:00:00+00:00,clean_sheets,,3,manual
+2025/26,Kriss,2025-12-20T00:00:00+00:00,totalt_mal,,21,manual
+2025/26,Kriss,2025-12-20T00:00:00+00:00,spiller_mest_fpl,,Saka (MID) - ARS,manual
+2025/26,Kriss,2025-12-20T00:00:00+00:00,keeper_flest_saves,,Verbruggen (GK) - BHA,manual
+2025/26,Kriss,2025-12-20T00:00:00+00:00,kamp_flest_skudd,,124961,manual
+2025/26,Kriss,2025-12-20T00:00:00+00:00,kamp_flest_pasninger,,124966,manual
+2025/26,Kriss,2025-12-20T00:00:00+00:00,hoyeste_ballbesittelse,,68,manual
+2025/26,Kriss,2025-12-20T00:00:00+00:00,fpl_score,,51,manual
+2025/26,Kriss,2025-12-20T00:00:00+00:00,var_omgjoringer,,1,manual
+2025/26,Seb,2025-12-20T00:00:00+00:00,kamper,124968,0-2,manual
+2025/26,Seb,2025-12-20T00:00:00+00:00,kamper,124961,2-1,manual
+2025/26,Seb,2025-12-20T00:00:00+00:00,kamper,124962,2-2,manual
+2025/26,Seb,2025-12-20T00:00:00+00:00,kamper,124963,0-0,manual
+2025/26,Seb,2025-12-20T00:00:00+00:00,kamper,124966,4-0,manual
+2025/26,Seb,2025-12-20T00:00:00+00:00,kamper,124970,1-1,manual
+2025/26,Seb,2025-12-20T00:00:00+00:00,kamper,124964,2-2,manual
+2025/26,Seb,2025-12-20T00:00:00+00:00,gule_kort,,18,manual
+2025/26,Seb,2025-12-20T00:00:00+00:00,rode_kort,,1,manual
+2025/26,Seb,2025-12-20T00:00:00+00:00,straffer,,2,manual
+2025/26,Seb,2025-12-20T00:00:00+00:00,lag_flest_gule,,Everton,manual
+2025/26,Seb,2025-12-20T00:00:00+00:00,kamp_flest_kort,,124963,manual
+2025/26,Seb,2025-12-20T00:00:00+00:00,lag_flest_scoringer,,Liverpool,manual
+2025/26,Seb,2025-12-20T00:00:00+00:00,kamp_flest_scoringer,,124962,manual
+2025/26,Seb,2025-12-20T00:00:00+00:00,clean_sheets,,2,manual
+2025/26,Seb,2025-12-20T00:00:00+00:00,totalt_mal,,25,manual
+2025/26,Seb,2025-12-20T00:00:00+00:00,spiller_mest_fpl,,Wirtz (MID) - LIV,manual
+2025/26,Seb,2025-12-20T00:00:00+00:00,keeper_flest_saves,,Sels (GK) - NFO,manual
+2025/26,Seb,2025-12-20T00:00:00+00:00,kamp_flest_skudd,,124966,manual
+2025/26,Seb,2025-12-20T00:00:00+00:00,kamp_flest_pasninger,,124966,manual
+2025/26,Seb,2025-12-20T00:00:00+00:00,hoyeste_ballbesittelse,,65,manual
+2025/26,Seb,2025-12-20T00:00:00+00:00,fpl_score,,41,manual
+2025/26,Seb,2025-12-20T00:00:00+00:00,var_omgjoringer,,2,manual
+2025/26,Simon,2025-12-20T00:00:00+00:00,kamper,124968,1-2,manual
+2025/26,Simon,2025-12-20T00:00:00+00:00,kamper,124961,3-0,manual
+2025/26,Simon,2025-12-20T00:00:00+00:00,kamper,124962,1-1,manual
+2025/26,Simon,2025-12-20T00:00:00+00:00,kamper,124963,0-1,manual
+2025/26,Simon,2025-12-20T00:00:00+00:00,kamper,124966,2-0,manual
+2025/26,Simon,2025-12-20T00:00:00+00:00,kamper,124970,0-0,manual
+2025/26,Simon,2025-12-20T00:00:00+00:00,kamper,124964,2-1,manual
+2025/26,Simon,2025-12-20T00:00:00+00:00,gule_kort,,19,manual
+2025/26,Simon,2025-12-20T00:00:00+00:00,rode_kort,,0,manual
+2025/26,Simon,2025-12-20T00:00:00+00:00,straffer,,1,manual
+2025/26,Simon,2025-12-20T00:00:00+00:00,lag_flest_gule,,Wolves,manual
+2025/26,Simon,2025-12-20T00:00:00+00:00,kamp_flest_kort,,124964,manual
+2025/26,Simon,2025-12-20T00:00:00+00:00,lag_flest_scoringer,,Manchester City,manual
+2025/26,Simon,2025-12-20T00:00:00+00:00,kamp_flest_scoringer,,124961,manual
+2025/26,Simon,2025-12-20T00:00:00+00:00,clean_sheets,,4,manual
+2025/26,Simon,2025-12-20T00:00:00+00:00,totalt_mal,,18,manual
+2025/26,Simon,2025-12-20T00:00:00+00:00,spiller_mest_fpl,,Haaland (FWD) - MCI,manual
+2025/26,Simon,2025-12-20T00:00:00+00:00,keeper_flest_saves,,Martinez (GK) - AVL,manual
+2025/26,Simon,2025-12-20T00:00:00+00:00,kamp_flest_skudd,,124966,manual
+2025/26,Simon,2025-12-20T00:00:00+00:00,kamp_flest_pasninger,,124966,manual
+2025/26,Simon,2025-12-20T00:00:00+00:00,hoyeste_ballbesittelse,,69,manual
+2025/26,Simon,2025-12-20T00:00:00+00:00,fpl_score,,32,manual
+2025/26,Simon,2025-12-20T00:00:00+00:00,var_omgjoringer,,2,manual
+2025/26,Morten,2025-12-20T00:00:00+00:00,kamper,124968,0-2,manual
+2025/26,Morten,2025-12-20T00:00:00+00:00,kamper,124961,3-0,manual
+2025/26,Morten,2025-12-20T00:00:00+00:00,kamper,124962,2-2,manual
+2025/26,Morten,2025-12-20T00:00:00+00:00,kamper,124963,1-1,manual
+2025/26,Morten,2025-12-20T00:00:00+00:00,kamper,124966,2-1,manual
+2025/26,Morten,2025-12-20T00:00:00+00:00,kamper,124970,1-3,manual
+2025/26,Morten,2025-12-20T00:00:00+00:00,kamper,124964,1-1,manual
+2025/26,Morten,2025-12-20T00:00:00+00:00,gule_kort,,22,manual
+2025/26,Morten,2025-12-20T00:00:00+00:00,rode_kort,,0,manual
+2025/26,Morten,2025-12-20T00:00:00+00:00,straffer,,1,manual
+2025/26,Morten,2025-12-20T00:00:00+00:00,lag_flest_gule,,Burnley,manual
+2025/26,Morten,2025-12-20T00:00:00+00:00,kamp_flest_kort,,124963,manual
+2025/26,Morten,2025-12-20T00:00:00+00:00,lag_flest_scoringer,,Arsenal,manual
+2025/26,Morten,2025-12-20T00:00:00+00:00,kamp_flest_scoringer,,124970,manual
+2025/26,Morten,2025-12-20T00:00:00+00:00,clean_sheets,,2,manual
+2025/26,Morten,2025-12-20T00:00:00+00:00,totalt_mal,,20,manual
+2025/26,Morten,2025-12-20T00:00:00+00:00,spiller_mest_fpl,,Haaland (FWD) - MCI,manual
+2025/26,Morten,2025-12-20T00:00:00+00:00,keeper_flest_saves,,Sels (GK) - NFO,manual
+2025/26,Morten,2025-12-20T00:00:00+00:00,kamp_flest_skudd,,124970,manual
+2025/26,Morten,2025-12-20T00:00:00+00:00,kamp_flest_pasninger,,124968,manual
+2025/26,Morten,2025-12-20T00:00:00+00:00,hoyeste_ballbesittelse,,70,manual
+2025/26,Morten,2025-12-20T00:00:00+00:00,fpl_score,,25,manual
+2025/26,Morten,2025-12-20T00:00:00+00:00,var_omgjoringer,,2,manual
