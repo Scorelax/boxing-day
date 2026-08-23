@@ -97,7 +97,8 @@ def main():
 
     intro_text = (
         f"Boxing Day {year} — fill in every field below. You can edit this issue any time before "
-        "kickoff to change your answers; it will be re-checked automatically. For player names, use "
+        f"12:30 UK / 13:30 Norway time on the 26th to change your answers; it will be re-checked "
+        "automatically. After that deadline, edits are no longer accepted. For player names, use "
         "the exact spelling from the eligible-players list linked from the site."
     )
     intro = "  - type: markdown\n    attributes:\n      value: " + yq(intro_text)

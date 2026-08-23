@@ -7,7 +7,7 @@ A yearly prediction pool built around the Premier League's Boxing Day fixtures. 
 ## Structure
 
 ```
-index.html      overview: fixtures + categories + squad rules + eligible-player lookup
+index.html      three tabs: Rules, Overview (all submissions), Edit form
 data/
   matches.csv             this year's Boxing Day fixtures — empty until Dec 25 (see below)
   eligible-players.csv     pool of players the squad bet can pick from — same
@@ -30,14 +30,18 @@ Players submit by opening a GitHub Issue from a template - **no external account
 
 1. **`scripts/fetch_boxing_day.py`** (Dec 25, see below) fetches the year's real fixtures and eligible players.
 2. **`scripts/generate_submission_form.py`** runs right after it, in the same job, and builds `.github/ISSUE_TEMPLATE/boxing-day-submission.yml` - a [GitHub Issue Form](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-issue-forms) with one field per match score, one per other bet category, and a free-text squad field. It's regenerated every year since the fixtures/players it's built from change every year - **don't hand-edit the generated file.**
-   - Team/match dropdowns are safe (this year: 20 teams, 10 matches) - well under GitHub's **50-option-per-dropdown cap**. But the eligible-player pool (500-600+ players) blows past that cap by an order of magnitude, so player selection (the squad, and the two "pick a player" bets) uses **free-text input** instead: `Full Name (CLUB)`, exactly as shown in the "Eligible players" table on the site, which has a filter box to make finding the right spelling easy.
-3. A player clicks **Submit your sheet** on the site (only visible once fixtures are confirmed) → GitHub's own "New issue" page, pre-filled from the template.
+   - Team/match dropdowns are safe (this year: 20 teams, 10 matches) - well under GitHub's **50-option-per-dropdown cap**. But the eligible-player pool (500-600+ players) blows past that cap by an order of magnitude, so player selection (the squad, and the two "pick a player" bets) uses **free-text input** instead: `Full Name (CLUB)`, exactly as shown in the "Eligible players" table on the site's **Edit form** tab, which has a filter box to make finding the right spelling easy.
+3. On the site's **Edit form** tab, a player clicks **Submit your sheet** (first time) or **Edit your submission** (already submitted) → both go to GitHub itself, not our page:
+   - "Submit" opens GitHub's "New issue" page pre-filled from the template.
+   - "Edit" opens `github.com/.../issues?q=is:issue label:boxing-day-submission author:@me` - GitHub's own `author:@me` search qualifier resolves to whoever's currently logged into GitHub, so this link takes each person straight to *their own* issue without our site needing any login system of its own. Requires being logged into GitHub (which submitting requires anyway).
 4. **`.github/workflows/process-submission.yml`** fires on every submission issue being opened *or edited*, running **`scripts/process_submission.py`**, which:
+   - Refuses anything after the **12:30 UK / 13:30 Norway time, Dec 26** deadline - comments that submissions are closed and leaves `submissions.csv` untouched, so whatever was recorded before the deadline stands as final.
    - Parses the issue body (each field renders as `### <label>` then the answer - field labels carry an invisible `[[key]]` tag so parsing doesn't depend on the human-readable text).
    - Validates everything: every match has a real `H-A` score, every category is answered with something that actually exists (a real team, a real match, a real eligible player), and the squad is checked against the real rules (1 GKP, 3-5 DEF, 3-5 MID, 1-3 FWD, max 3 per club, 11 total) using the real `eligible-players.csv` - never trusts anything from the issue body at face value.
    - **If anything's wrong:** comments on the issue listing every problem found, and stops. The player edits their issue (fixes it in place, doesn't need to open a new one) - editing re-triggers this same check.
    - **If it's all valid:** writes the rows into `data/submissions.csv` and commits directly. A resubmission (editing an already-recorded issue) replaces that issue's prior rows rather than duplicating them - each row is tagged with the issue number specifically to make that replace-not-append safe. Comments "Recorded!" and labels the issue.
    - Needs **zero secrets** - `gh` (pre-authenticated inside Actions) handles comments/labels, and the workflow's own automatic `GITHUB_TOKEN` (scoped to `contents: write`, `issues: write`) handles the commit. This only works because everything lives in this one repo already; there's no third-party credential to create or rotate.
+5. The site's **Overview** tab reads `data/submissions.csv` directly and shows *everyone's* answers side by side (match predictions, other bets, squads) - "No forms submitted yet" until the first one lands. This is raw submissions, not a scored leaderboard - see Status.
 
 ### Why not a nicer custom-built form?
 
@@ -102,7 +106,7 @@ Cross-referencing the two APIs' clubs is done by matching their 3-letter abbrevi
 
 ## Status
 
-This repo is scaffolding, set up ahead of the 2026-12-26 event while the plan is fresh. Built and verified end-to-end: fixture/eligible-player fetching, the generated submission form, and the parse-validate-record pipeline (tested against real player data with both a passing and a rule-breaking squad).
+This repo is scaffolding, set up ahead of the 2026-12-26 event while the plan is fresh. Built and verified end-to-end: fixture/eligible-player fetching, the generated submission form, the parse-validate-record pipeline (tested against real player data with both a passing and a rule-breaking squad, plus the fix-and-resubmit loop), the three-tab site (Rules / Overview / Edit form - Overview's comparison tables verified against a real recorded submission), and deadline enforcement.
 
 Not built yet:
 

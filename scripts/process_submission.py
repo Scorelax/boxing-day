@@ -27,6 +27,9 @@ SQUAD_SIZE = 11
 SQUAD_RULES = {"GKP": (1, 1), "DEF": (3, 5), "MID": (3, 5), "FWD": (1, 3)}
 MAX_PER_CLUB = 3
 
+# 12:30 UK time on Boxing Day == 12:30 UTC (the UK is on GMT, not BST, in December)
+DEADLINE_MONTH, DEADLINE_DAY, DEADLINE_HOUR, DEADLINE_MINUTE = 12, 26, 12, 30
+
 
 def read_csv(path):
     if not path.exists():
@@ -75,8 +78,13 @@ def main():
         comment(issue_number, "Submissions aren't open yet for this year (fixtures/eligible players haven't been fetched). Try again closer to Boxing Day.")
         return
 
-    answers = parse_issue_body(issue["body"] or "")
     season = matches[0]["season"]
+    deadline = datetime(int(season), DEADLINE_MONTH, DEADLINE_DAY, DEADLINE_HOUR, DEADLINE_MINUTE, tzinfo=timezone.utc)
+    if datetime.now(timezone.utc) > deadline:
+        comment(issue_number, "Submissions closed at 12:30 UK / 13:30 Norway time on Boxing Day - this entry can no longer be recorded or changed. Whatever was recorded before the deadline stands.")
+        return
+
+    answers = parse_issue_body(issue["body"] or "")
     errors = []
 
     player_name = answers.get("player_name", "").strip()
