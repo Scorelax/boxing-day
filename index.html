@@ -113,10 +113,6 @@
   <div class="panel" id="panel-edit" style="display:none"></div>
   <div class="panel" id="panel-alltime" style="display:none"></div>
   <div class="panel" id="panel-rules" style="display:none"></div>
-
-  <div class="subhead">History</div>
-  <div class="tabs" id="historyTabs"></div>
-  <div class="panel" id="panel-history" style="display:none"></div>
 </main>
 
 <footer><div class="wrap">Boxing Day · loaded from <b>data/matches.csv</b> + <b>data/categories.csv</b> + <b>data/eligible-players.csv</b> + <b>data/submissions.csv</b> + <b>data/results.csv</b> + <b>data/player-points.csv</b> + <b>data/current-season.txt</b></div></footer>
@@ -433,33 +429,31 @@ function scoreMatch(pred,actual){
     return `<div class="subhead">${selection}</div>` + renderSeasonHTML(computeSeasonScoring(selection));
   }
 
-  document.getElementById("panel-alltime").innerHTML=renderHistoryPanel("all-time");
-
+  // All-time tab: the summary, plus a season-by-season browser nested inside it
   const historySeasons=[...new Set(matches.map(m=>m.season))].filter(s=>s&&s!==currentSeason).sort().reverse();
-  document.getElementById("historyTabs").innerHTML=
-    historySeasons.map((s,i)=>`<button class="tab small${i===0?" active":""}" data-history="${s}">${s}</button>`).join("");
-  document.getElementById("panel-history").innerHTML=historySeasons.length
-    ?renderHistoryPanel(historySeasons[0])
-    :`<div class="rec"><div class="cap">No history yet</div><div class="det">Once this year's Boxing Day is archived and next year's opens, it'll show up here.</div></div>`;
+  const historySectionHTML=historySeasons.length?`
+    <div class="subhead" style="margin-top:28px">Browse a season</div>
+    <div class="tabs" id="historyTabs">${historySeasons.map((s,i)=>`<button class="tab small${i===0?" active":""}" data-history="${s}">${s}</button>`).join("")}</div>
+    <div id="historyContent">${renderHistoryPanel(historySeasons[0])}</div>`:"";
+  document.getElementById("panel-alltime").innerHTML=renderHistoryPanel("all-time")+historySectionHTML;
+  document.querySelectorAll("#historyTabs .tab").forEach(btn=>{
+    btn.onclick=()=>{
+      document.querySelectorAll("#historyTabs .tab").forEach(b=>b.classList.remove("active"));
+      btn.classList.add("active");
+      document.getElementById("historyContent").innerHTML=renderHistoryPanel(btn.dataset.history);
+    };
+  });
 
-  // ---------- tab switching (both rows share one active-state) ----------
+  // ---------- tab switching ----------
   function selectPanel(id){
     document.querySelectorAll(".panel").forEach(p=>p.style.display="none");
     document.getElementById(`panel-${id}`).style.display="";
   }
   document.querySelectorAll("#tabBar .tab").forEach(btn=>{
     btn.onclick=()=>{
-      document.querySelectorAll(".tab").forEach(b=>b.classList.remove("active"));
+      document.querySelectorAll("#tabBar .tab").forEach(b=>b.classList.remove("active"));
       btn.classList.add("active");
       selectPanel(btn.dataset.tab);
-    };
-  });
-  document.querySelectorAll("#historyTabs .tab").forEach(btn=>{
-    btn.onclick=()=>{
-      document.querySelectorAll(".tab").forEach(b=>b.classList.remove("active"));
-      btn.classList.add("active");
-      document.getElementById("panel-history").innerHTML=renderHistoryPanel(btn.dataset.history);
-      selectPanel("history");
     };
   });
 })();
