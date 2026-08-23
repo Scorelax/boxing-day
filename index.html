@@ -130,14 +130,18 @@ const TYPE_LABEL={match_score:"score",number:"number",team_pick:"team",match_pic
 const GH_REPO="Scorelax/boxing-day";
 
 (async function(){
-  let matches,categories,players;
+  let matches,categories,players=[];
   try{
-    [matches,categories,players]=await Promise.all([
-      loadCSV("data/matches.csv"),loadCSV("data/categories.csv"),loadCSV("data/eligible-players.csv"),
-    ]);
+    [matches,categories]=await Promise.all([loadCSV("data/matches.csv"),loadCSV("data/categories.csv")]);
   }catch(err){
     document.querySelector("main").innerHTML=`<div class="rec" style="margin:60px 0"><div class="cap">Couldn't load data</div><div class="det">${err.message}<br><br>If you opened this file directly from disk, run a local server instead — e.g. <code>python -m http.server</code> — then open the printed http://localhost address.</div></div>`;
     return;
+  }
+
+  try{
+    players=await loadCSV("data/eligible-players.csv");
+  }catch(err){
+    console.warn("data/eligible-players.csv not available yet:",err.message);
   }
 
   const year=matches[0]?.season||new Date().getUTCFullYear();
