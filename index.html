@@ -105,11 +105,13 @@
   <div class="tabs main" id="tabBar">
     <button class="tab active" data-tab="overview">Overview</button>
     <button class="tab" data-tab="edit">Edit form</button>
+    <button class="tab" data-tab="alltime">All-time</button>
     <button class="tab" data-tab="rules">Rules</button>
   </div>
 
   <div class="panel" id="panel-overview"></div>
   <div class="panel" id="panel-edit" style="display:none"></div>
+  <div class="panel" id="panel-alltime" style="display:none"></div>
   <div class="panel" id="panel-rules" style="display:none"></div>
 
   <div class="subhead">History</div>
@@ -431,11 +433,14 @@ function scoreMatch(pred,actual){
     return `<div class="subhead">${selection}</div>` + renderSeasonHTML(computeSeasonScoring(selection));
   }
 
+  document.getElementById("panel-alltime").innerHTML=renderHistoryPanel("all-time");
+
   const historySeasons=[...new Set(matches.map(m=>m.season))].filter(s=>s&&s!==currentSeason).sort().reverse();
   document.getElementById("historyTabs").innerHTML=
-    `<button class="tab small" data-history="all-time">All-time</button>` +
-    historySeasons.map(s=>`<button class="tab small" data-history="${s}">${s}</button>`).join("");
-  document.getElementById("panel-history").innerHTML=renderHistoryPanel("all-time");
+    historySeasons.map((s,i)=>`<button class="tab small${i===0?" active":""}" data-history="${s}">${s}</button>`).join("");
+  document.getElementById("panel-history").innerHTML=historySeasons.length
+    ?renderHistoryPanel(historySeasons[0])
+    :`<div class="rec"><div class="cap">No history yet</div><div class="det">Once this year's Boxing Day is archived and next year's opens, it'll show up here.</div></div>`;
 
   // ---------- tab switching (both rows share one active-state) ----------
   function selectPanel(id){
