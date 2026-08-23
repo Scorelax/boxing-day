@@ -7,12 +7,16 @@ A yearly prediction pool built around the Premier League's Boxing Day fixtures. 
 ## Structure
 
 ```
-index.html      three tabs: Rules, Overview (all submissions), Edit form
+index.html      four tabs: Rules, Overview (all submissions), Leaderboard, Edit form
 data/
   matches.csv             this year's Boxing Day fixtures — empty until Dec 25 (see below)
   eligible-players.csv     pool of players the squad bet can pick from — same
-  categories.csv           the bet categories and how each is answered (static, doesn't change)
+  categories.csv           the bet categories, their point values, and how each is answered (static)
   submissions.csv          everyone's answers, one row per answer — appears once someone submits
+  results.csv              the actual correct answers, one row per category — filled in manually
+                            after Boxing Day for now (see Status)
+  player-points.csv        actual FPL points each eligible player earned that day — only needed to
+                            score the fpl_score category; same manual-for-now caveat
 scripts/
   fetch_boxing_day.py           the Dec-25 fixture/player job — see below
   generate_submission_form.py   builds this year's GitHub Issue Form from that data
@@ -41,25 +45,34 @@ Players submit by opening a GitHub Issue from a template - **no external account
    - **If anything's wrong:** comments on the issue listing every problem found, and stops. The player edits their issue (fixes it in place, doesn't need to open a new one) - editing re-triggers this same check.
    - **If it's all valid:** writes the rows into `data/submissions.csv` and commits directly. A resubmission (editing an already-recorded issue) replaces that issue's prior rows rather than duplicating them - each row is tagged with the issue number specifically to make that replace-not-append safe. Comments "Recorded!" and labels the issue.
    - Needs **zero secrets** - `gh` (pre-authenticated inside Actions) handles comments/labels, and the workflow's own automatic `GITHUB_TOKEN` (scoped to `contents: write`, `issues: write`) handles the commit. This only works because everything lives in this one repo already; there's no third-party credential to create or rotate.
-5. The site's **Overview** tab reads `data/submissions.csv` directly and shows *everyone's* answers side by side (match predictions, other bets, squads) - "No forms submitted yet" until the first one lands. This is raw submissions, not a scored leaderboard - see Status.
+5. The site's **Overview** tab reads `data/submissions.csv` directly and shows *everyone's* answers side by side (match predictions, other bets, squads) - "No forms submitted yet" until the first one lands. This is raw submissions, not scored.
+6. The site's **Leaderboard** tab reads `submissions.csv` + `results.csv` + `player-points.csv` and computes standings client-side - see Scoring below. Says "No forms submitted yet" / "Results haven't been recorded yet" until there's something to show, and updates as results come in partially (a note appears while any result is still missing, and unscored cells show as "–" rather than 0).
 
 ### Why not a nicer custom-built form?
 
 We considered a fully custom page (a proper drag-select squad picker, live "this pick breaks a rule" feedback) backed by a small Cloudflare Worker receiving submissions and writing them to GitHub on the visitor's behalf. It would have looked better, but GitHub Pages can't accept a POST itself - some server has to hold a write-scoped GitHub credential privately and relay the request, which means standing up and authenticating a separate service (a Cloudflare account, a scoped GitHub token). Issue Forms trade that away: not quite as polished (free-text player names instead of a live picker; validation happens after you submit, via a bot comment, instead of live in the browser) for **zero infrastructure outside GitHub** - the better trade for a form eight friends use once a year.
 
 ### `data/categories.csv`
-The 17 things players predict each year, with a `type` telling both the generated form and the app how that category is answered:
+The 17 things players predict each year, with a `type` telling both the generated form and the app how that category is answered, and a `points` value (see Scoring):
 
 | type | meaning |
 |---|---|
-| `match_score` | Not one category — one exact-score guess per match in `matches.csv` |
+| `match_score` | Not one category — one exact-score guess per match in `matches.csv`, scored separately (see Scoring) |
 | `number` | Guess a single total (e.g. total yellow cards across all matches) |
 | `team_pick` | Pick one club from the pool of clubs playing that day (dropdown) |
 | `match_pick` | Pick one of the day's matches (dropdown) |
 | `player_pick` | Pick one player from the pool of eligible players (free text, `Full Name (CLUB)`) |
 | `fpl_squad` | The one-time fantasy squad bet — see below |
 
-Categories are in Norwegian (`label_no`) since that's the language the group actually uses. A `position_filter` column (e.g. `GKP` on the keeper-saves category) restricts which eligible players are valid for that one category.
+The site (and every generated form field) shows `label_en`; `label_no` is kept in the file purely as a reference to the group's original Norwegian wording it was translated from. A `position_filter` column (e.g. `GKP` on the keeper-saves category) restricts which eligible players are valid for that one category.
+
+## Scoring
+
+- **Match predictions (`kamper`)**: per match, **3 points** for the exact score, **1 point** for correctly picking the result (home win / draw / away win) without the exact score, **0** otherwise.
+- **Every other category**: worth its fixed `points` value from `categories.csv` if the submitted answer exactly matches `results.csv`'s recorded answer for that category, **0** otherwise. Ties are common and fine - e.g. if two players both correctly picked the team with most yellow cards, both get the full points; it's not "closest wins."
+- **`fpl_score`** is the one exception - there's no single "correct answer" to compare against. Instead, each submitter's squad total is computed by summing `player-points.csv` for their 11 picked players, and whichever total is highest wins the category's points (ties split it - everyone tied for the top total gets the full points).
+
+The Leaderboard tab computes all of this client-side from `submissions.csv` + `results.csv` + `player-points.csv` - verified by running the actual scoring logic in Node against a constructed two-player test scenario (mixed exact/result-only/wrong match predictions, mixed category hits/misses, two different squads with different point totals) and hand-checking every per-line score and the final totals.
 
 ## The FPL squad bet ("FPL score")
 
@@ -87,6 +100,12 @@ One row per **answer**, not per submission — a "long" format so adding a categ
 | `answer` | the guess itself: `"2-1"` for a score, a plain number, a team/club name, a `match_id`, an `element_id` — or, for `fpl_score`, all 11 selected `element_id`s joined with `;` |
 | `issue_number` | which submission issue this row came from — a resubmission replaces only that issue's own prior rows |
 
+## `data/results.csv` and `data/player-points.csv` schemas
+
+`results.csv`: `season, category_id, ref_id, answer` - one row per match (`category_id=kamper`, `ref_id=<match_id>`, `answer="H-A"`) plus one row per other category except `fpl_score` (`ref_id` blank), in the exact same `answer` format submissions use (a team/club name, a `match_id`, an `element_id`) so they compare equal. Currently filled in **by hand** after Boxing Day - no automated pipeline yet (see Status).
+
+`player-points.csv`: `season, element_id, points` - one row per eligible player with the FPL points they actually earned that day. Only needed for `fpl_score`; also currently manual.
+
 ## Fixtures aren't known months out — `scripts/fetch_boxing_day.py`
 
 The Premier League publishes fixture pairings for a round well in advance, but pairings can still move (and kickoff times almost always aren't fixed until nearer the day, for broadcast scheduling). So `data/matches.csv` and `data/eligible-players.csv` start each cycle **empty** and only get filled in by `.github/workflows/fetch-boxing-day.yml`, scheduled for **06:00 UTC on December 25th** — the day before, once the round is actually locked in. That job:
@@ -106,12 +125,11 @@ Cross-referencing the two APIs' clubs is done by matching their 3-letter abbrevi
 
 ## Status
 
-This repo is scaffolding, set up ahead of the 2026-12-26 event while the plan is fresh. Built and verified end-to-end: fixture/eligible-player fetching, the generated submission form, the parse-validate-record pipeline (tested against real player data with both a passing and a rule-breaking squad, plus the fix-and-resubmit loop), the three-tab site (Rules / Overview / Edit form - Overview's comparison tables verified against a real recorded submission), and deadline enforcement.
+This repo is scaffolding, set up ahead of the 2026-12-26 event while the plan is fresh. Built and verified end-to-end: fixture/eligible-player fetching, the generated submission form, the parse-validate-record pipeline (tested against real player data with both a passing and a rule-breaking squad, plus the fix-and-resubmit loop), deadline enforcement, and the four-tab site including the Leaderboard's full scoring engine (verified in Node against a hand-checked two-player scenario - see Scoring).
 
 Not built yet:
 
-1. **`data/results.csv`** — the actual correct answers per year, filled in as Boxing Day plays out, likely semi-automated (see below).
-2. **The stats/leaderboard page itself** (who guessed what right, standings) — build once there's real submission data to show.
+1. **Automated `results.csv` / `player-points.csv` filling.** Both are hand-edited after Boxing Day for now. The data needed exists (see "Live match data" below), but writing the fetch script is future work - realistically once we're closer to actually needing it, since some of that data source's specifics (penalties, VAR overturns, and the FPL `multiplier` field's exact behavior) still need verifying against real finished matches/gameweeks first.
 
 ### Live match data
 

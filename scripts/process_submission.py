@@ -123,28 +123,28 @@ def main():
             continue
         v = answers.get(f'cat:{c["id"]}', "").strip()
         if not v:
-            errors.append(f'Missing answer for "{c["label_no"]}".')
+            errors.append(f'Missing answer for "{c["label_en"]}".')
             continue
         if c["type"] == "number":
             if not re.fullmatch(r"\d+", v):
-                errors.append(f'"{c["label_no"]}" must be a whole number (got "{v}").')
+                errors.append(f'"{c["label_en"]}" must be a whole number (got "{v}").')
                 continue
             cat_rows.append((c["id"], "", v))
         elif c["type"] == "team_pick":
             if v not in team_names:
-                errors.append(f'"{v}" isn\'t one of this year\'s playing teams (for "{c["label_no"]}").')
+                errors.append(f'"{v}" isn\'t one of this year\'s playing teams (for "{c["label_en"]}").')
                 continue
             cat_rows.append((c["id"], "", v))
         elif c["type"] == "match_pick":
             mid = match_by_label.get(v)
             if not mid:
-                errors.append(f'"{v}" isn\'t one of this year\'s matches (for "{c["label_no"]}").')
+                errors.append(f'"{v}" isn\'t one of this year\'s matches (for "{c["label_en"]}").')
                 continue
             cat_rows.append((c["id"], "", mid))
         elif c["type"] == "player_pick":
             p, err = lookup_player(v, c.get("position_filter") or None)
             if err:
-                errors.append(f'{err} (for "{c["label_no"]}").')
+                errors.append(f'{err} (for "{c["label_en"]}").')
                 continue
             cat_rows.append((c["id"], "", p["element_id"]))
 

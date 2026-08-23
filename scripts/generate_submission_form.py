@@ -79,7 +79,7 @@ def main():
         if c["id"] in ("kamper", "fpl_score"):
             continue
         fid = f'cat_{c["id"]}'
-        label_base = f'{c["label_no"]} [[cat:{c["id"]}]]'
+        label_base = f'{c["label_en"]} [[cat:{c["id"]}]]'
         if c["type"] == "number":
             fields.append(field_input(fid, label_base, "e.g. 34"))
         elif c["type"] == "team_pick":
@@ -91,7 +91,7 @@ def main():
 
     squad_cat = next(c for c in categories if c["id"] == "fpl_score")
     fields.append(field_textarea(
-        "squad", f'{squad_cat["label_no"]} — your 11-player squad [[squad]]',
+        "squad", f'{squad_cat["label_en"]} — your 11-player squad [[squad]]',
         "One player per line, format: Full Name (CLUB), e.g. David Raya (ARS)",
     ))
 

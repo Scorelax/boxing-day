@@ -93,15 +93,17 @@
   <div class="tabs" id="tabBar">
     <button class="tab active" data-tab="rules">Rules</button>
     <button class="tab" data-tab="overview">Overview</button>
+    <button class="tab" data-tab="leaderboard">Leaderboard</button>
     <button class="tab" data-tab="edit">Edit form</button>
   </div>
 
   <div class="panel" id="panel-rules"></div>
   <div class="panel" id="panel-overview" style="display:none"></div>
+  <div class="panel" id="panel-leaderboard" style="display:none"></div>
   <div class="panel" id="panel-edit" style="display:none"></div>
 </main>
 
-<footer><div class="wrap">Boxing Day · loaded from <b>data/matches.csv</b> + <b>data/categories.csv</b> + <b>data/eligible-players.csv</b> + <b>data/submissions.csv</b></div></footer>
+<footer><div class="wrap">Boxing Day · loaded from <b>data/matches.csv</b> + <b>data/categories.csv</b> + <b>data/eligible-players.csv</b> + <b>data/submissions.csv</b> + <b>data/results.csv</b> + <b>data/player-points.csv</b></div></footer>
 
 <script>
 "use strict";
@@ -140,8 +142,9 @@ const GH_REPO="Scorelax/boxing-day";
     document.querySelector("main").innerHTML=`<div class="rec" style="margin:60px 0"><div class="cap">Couldn't load data</div><div class="det">${err.message}<br><br>If you opened this file directly from disk, run a local server instead — e.g. <code>python -m http.server</code> — then open the printed http://localhost address.</div></div>`;
     return;
   }
-  const [players,submissions]=await Promise.all([
+  const [players,submissions,results,playerPoints]=await Promise.all([
     loadCSVSoft("data/eligible-players.csv"),loadCSVSoft("data/submissions.csv"),
+    loadCSVSoft("data/results.csv"),loadCSVSoft("data/player-points.csv"),
   ]);
 
   const year=matches[0]?.season||new Date().getUTCFullYear();
@@ -170,9 +173,9 @@ const GH_REPO="Scorelax/boxing-day";
     <section class="block">
       <div class="head"><h2 class="disp">Categories</h2></div>
       <div class="tablewrap"><table>
-        <thead><tr><th>Category</th><th>Type</th><th>Notes</th></tr></thead>
+        <thead><tr><th>Category</th><th>Type</th><th>Points</th><th>Notes</th></tr></thead>
         <tbody>${categories.map(c=>
-          `<tr><td>${c.label_no}</td><td><span class="tag ${c.type==='number'?'number':c.type==='fpl_squad'?'squad':''}">${TYPE_LABEL[c.type]||c.type}</span></td><td>${c.notes}</td></tr>`
+          `<tr><td>${c.label_en}</td><td><span class="tag ${c.type==='number'?'number':c.type==='fpl_squad'?'squad':''}">${TYPE_LABEL[c.type]||c.type}</span></td><td>${c.id==='kamper'?'3 exact · 1 result':c.points}</td><td>${c.notes}</td></tr>`
         ).join("")}</tbody>
       </table></div>
     </section>
@@ -212,7 +215,7 @@ const GH_REPO="Scorelax/boxing-day";
         if(c.type==="player_pick")v=playerLabel(v);
         return `<td>${v}</td>`;
       }).join("");
-      return `<tr><td>${c.label_no}</td>${cells}</tr>`;
+      return `<tr><td>${c.label_en}</td>${cells}</tr>`;
     }).join("");
 
     const squadBlocks=names.map(n=>{
@@ -243,6 +246,97 @@ const GH_REPO="Scorelax/boxing-day";
       ${squadBlocks}`;
   }
   document.getElementById("panel-overview").innerHTML=renderOverview();
+
+  // ---------- tab: Leaderboard ----------
+  function scoreMatch(pred,actual){
+    if(pred===actual)return 3;
+    const [ph,pa]=pred.split("-").map(Number),[ah,aa]=actual.split("-").map(Number);
+    const predRes=ph>pa?"H":(ph===pa?"D":"A"),actRes=ah>aa?"H":(ah===aa?"D":"A");
+    return predRes===actRes?1:0;
+  }
+  function renderLeaderboard(){
+    if(!submissions.length){
+      return `<div class="rec"><div class="cap">Leaderboard</div><div class="det">No forms submitted yet.</div></div>`;
+    }
+    if(!results.length){
+      return `<div class="rec"><div class="cap">Leaderboard</div><div class="det">Results haven't been recorded yet — check back after Boxing Day.</div></div>`;
+    }
+    const byPlayer={};
+    submissions.forEach(r=>{(byPlayer[r.player_name]=byPlayer[r.player_name]||[]).push(r);});
+    const names=Object.keys(byPlayer).sort();
+    const find=(rows,catId,refId)=>rows.find(r=>r.category_id===catId&&(refId===undefined||r.ref_id===refId));
+    const resultRow=(catId,refId="")=>results.find(r=>r.category_id===catId&&r.ref_id===refId);
+
+    const kamperLines=matches.map(m=>{
+      const actual=resultRow("kamper",m.match_id);
+      const scores={};
+      names.forEach(n=>{
+        const sub=find(byPlayer[n],"kamper",m.match_id);
+        scores[n]=(sub&&actual&&actual.answer)?scoreMatch(sub.answer,actual.answer):null;
+      });
+      return{label:`${m.home_team} vs ${m.away_team}`,scores,known:!!(actual&&actual.answer)};
+    });
+
+    const otherCats=categories.filter(c=>c.id!=="kamper"&&c.id!=="fpl_score");
+    const catLines=otherCats.map(c=>{
+      const actual=resultRow(c.id);
+      const pts=+c.points;
+      const scores={};
+      names.forEach(n=>{
+        const sub=find(byPlayer[n],c.id);
+        scores[n]=(sub&&actual&&actual.answer)?(sub.answer===actual.answer?pts:0):null;
+      });
+      return{label:c.label_en,scores,known:!!(actual&&actual.answer)};
+    });
+
+    const ptsById={};playerPoints.forEach(p=>{ptsById[p.element_id]=+p.points;});
+    const fplTotals={};
+    names.forEach(n=>{
+      const sub=find(byPlayer[n],"fpl_score");
+      const ids=sub?sub.answer.split(";").filter(Boolean):[];
+      const allKnown=playerPoints.length>0&&ids.length===11&&ids.every(id=>ptsById[id]!==undefined);
+      fplTotals[n]=allKnown?ids.reduce((s,id)=>s+ptsById[id],0):null;
+    });
+    const knownFpl=Object.values(fplTotals).filter(v=>v!==null);
+    const maxFpl=knownFpl.length?Math.max(...knownFpl):null;
+    const fplPts=+categories.find(c=>c.id==="fpl_score").points;
+    const fplScores={};
+    names.forEach(n=>{fplScores[n]=fplTotals[n]===null?null:(fplTotals[n]===maxFpl?fplPts:0);});
+    const fplLine={label:"FPL score (own squad)",scores:fplScores,known:knownFpl.length>0};
+
+    const allLines=[...kamperLines,...catLines,fplLine];
+    const anyPending=allLines.some(l=>!l.known);
+
+    const totals={};
+    names.forEach(n=>{totals[n]=allLines.reduce((s,l)=>s+(l.scores[n]||0),0);});
+    const ranked=[...names].sort((a,b)=>totals[b]-totals[a]);
+    let rank=0,lastScore=null;
+    const standingsRows=ranked.map((n,i)=>{
+      if(totals[n]!==lastScore){rank=i+1;lastScore=totals[n];}
+      return `<tr><td>${rank}</td><td>${n}</td><td><b>${totals[n]}</b></td></tr>`;
+    }).join("");
+
+    const breakdownRows=allLines.map(l=>{
+      const cells=names.map(n=>`<td>${l.scores[n]===null?'–':l.scores[n]}</td>`).join("");
+      return `<tr><td>${l.label}</td>${cells}</tr>`;
+    }).join("");
+
+    return `
+      ${anyPending?`<div class="rec"><div class="det">Not every result has been recorded yet — standings below only count what's known so far and will keep updating.</div></div>`:""}
+      <div class="subhead">Standings</div>
+      <div class="tablewrap"><table>
+        <thead><tr><th>#</th><th>Player</th><th>Points</th></tr></thead>
+        <tbody>${standingsRows}</tbody>
+      </table></div>
+
+      <div class="subhead" style="margin-top:28px">Breakdown</div>
+      <div class="det" style="color:var(--muted);margin-bottom:14px">"–" means that result hasn't been recorded yet.</div>
+      <div class="tablewrap"><table>
+        <thead><tr><th>Category</th>${names.map(n=>`<th>${n}</th>`).join("")}</tr></thead>
+        <tbody>${breakdownRows}</tbody>
+      </table></div>`;
+  }
+  document.getElementById("panel-leaderboard").innerHTML=renderLeaderboard();
 
   // ---------- tab: Edit form ----------
   function renderEdit(){
