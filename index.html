@@ -218,6 +218,9 @@ function scoreMatch(pred,actual){
         let text=sub.answer;
         if(c.type==="match_pick")text=matchLabel(text);
         if(c.type==="player_pick")text=playerLabel(text);
+        if(sub.override_points!==undefined&&sub.override_points!==""){
+          return{text,pts:+sub.override_points};
+        }
         const scored=(actual&&actual.answer)?(sub.answer===actual.answer?pts:0):null;
         return{text,pts:scored};
       }};

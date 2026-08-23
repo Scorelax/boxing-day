@@ -19,3 +19,10 @@ season,match_id,home_team,home_team_id,home_abbr,away_team,away_team_id,away_abb
 2023/24,2023_SHU_LUT,Sheffield United,18,SHU,Luton Town,163,LUT,"Tue 26 Dec 2023, 15:00 GMT",2,3
 2023/24,2023_BUR_LIV,Burnley,43,BUR,Liverpool,10,LIV,"Tue 26 Dec 2023, 15:00 GMT",0,2
 2023/24,2023_MUN_AVL,Manchester United,12,MUN,Aston Villa,2,AVL,"Tue 26 Dec 2023, 15:00 GMT",3,2
+2022/23,2022_BRE_TOT,Brentford,130,BRE,Tottenham Hotspur,21,TOT,"Mon 26 Dec 2022, 15:00 GMT",2,2
+2022/23,2022_CRY_FUL,Crystal Palace,6,CRY,Fulham,34,FUL,"Mon 26 Dec 2022, 15:00 GMT",0,3
+2022/23,2022_EVE_WOL,Everton,7,EVE,Wolverhampton Wanderers,38,WOL,"Mon 26 Dec 2022, 15:00 GMT",1,2
+2022/23,2022_LEI_NEW,Leicester City,26,LEI,Newcastle United,23,NEW,"Mon 26 Dec 2022, 15:00 GMT",0,3
+2022/23,2022_SOU_BHA,Southampton,20,SOU,Brighton & Hove Albion,131,BHA,"Mon 26 Dec 2022, 15:00 GMT",1,3
+2022/23,2022_AVL_LIV,Aston Villa,2,AVL,Liverpool,10,LIV,"Mon 26 Dec 2022, 15:00 GMT",1,3
+2022/23,2022_ARS_WHU,Arsenal,1,ARS,West Ham United,25,WHU,"Mon 26 Dec 2022, 15:00 GMT",3,1

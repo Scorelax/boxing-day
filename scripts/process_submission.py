@@ -189,12 +189,12 @@ def main():
         return
 
     now = datetime.now(timezone.utc).isoformat()
-    new_rows = [[season, player_name, now, "kamper", mid, score, issue_number] for mid, score in score_rows]
-    new_rows += [[season, player_name, now, cid, ref, ans, issue_number] for cid, ref, ans in cat_rows]
-    new_rows.append([season, player_name, now, "fpl_score", "", ";".join(squad_ids), issue_number])
+    new_rows = [[season, player_name, now, "kamper", mid, score, issue_number, ""] for mid, score in score_rows]
+    new_rows += [[season, player_name, now, cid, ref, ans, issue_number, ""] for cid, ref, ans in cat_rows]
+    new_rows.append([season, player_name, now, "fpl_score", "", ";".join(squad_ids), issue_number, ""])
 
     sub_path = DATA / "submissions.csv"
-    header = ["season", "player_name", "submitted_at", "category_id", "ref_id", "answer", "issue_number"]
+    header = ["season", "player_name", "submitted_at", "category_id", "ref_id", "answer", "issue_number", "override_points"]
     existing = read_csv(sub_path)
     kept = [[r.get(h, "") for h in header] for r in existing if r.get("issue_number") != issue_number]
     all_rows = kept + [[str(c) for c in row] for row in new_rows]

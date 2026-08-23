@@ -120,6 +120,9 @@ One row per **answer**, not per submission — a "long" format so adding a categ
 | `ref_id` | the match a `kamper` score belongs to (blank for every other category) |
 | `answer` | the guess itself: `"2-1"` for a score, a plain number, a team/club name, a `match_id`, an `element_id` — or, for `fpl_score`, all 11 selected `element_id`s joined with `;` |
 | `issue_number` | which submission issue this row came from — a resubmission replaces only that issue's own prior rows |
+| `override_points` | blank for every real/normal submission; if set, `computeSeasonScoring` uses this number directly as the row's points instead of comparing `answer` against `results.csv` |
+
+`override_points` exists for one reason: some past seasons scored certain categories with rules the current site can't reproduce (partial credit for a close guess, or crediting multiple tied answers) - `2022/23`'s handicap categories are the only current example. It lets a historical import record the *actual* points a category earned that year even when there's no single "correct answer" a normal category comparison could reconstruct. Live/current-season submissions never set it - the form and `process_submission.py` don't have a field for it, so it's only ever populated by hand during a historical import.
 
 `fpl_score`'s `answer` also accepts a **single bare number** instead of 11 `element_id`s - the season's total is used directly rather than summed from `player-points.csv`. This is for importing historical data where only a squad's final total was recorded, not its individual players (e.g. `2025/26`, imported from a spreadsheet that only tracked totals) - going forward, real submissions always carry the full 11-player breakdown, since that's what the form actually collects.
 
@@ -150,7 +153,7 @@ This repo is scaffolding, set up ahead of the 2026-12-26 event while the plan is
 Not built yet:
 
 1. **Automated `results.csv` / `player-points.csv` filling.** Both are hand-edited after Boxing Day for now. The data needed exists (see "Live match data" below), but writing the fetch script is future work - realistically once we're closer to actually needing it, since some of that data source's specifics (penalties, VAR overturns, and the FPL `multiplier` field's exact behavior) still need verifying against real finished matches/gameweeks first.
-2. **Historical data for seasons before `2023/24`** - the group has results tracked further back in a Google Sheet; importing those is a separate step once provided.
+2. **Historical data for seasons before `2022/23`** - the group's Google Sheet doesn't track anything earlier than that.
 
 ### `2025/26` import
 
@@ -169,6 +172,14 @@ Same as `2025/26`: `gule_kort`, `rode_kort`, `lag_flest_scoringer`, `kamp_flest_
 ### `2023/24` import
 
 5 matches, 5 players (Kriss, Seb, Simon, Morten, Henrik). All 5 exact match scores cross-checked against real match reports. All 5 final totals (Kriss 10, Seb 5, Simon 12, Morten 6, Henrik 13) recomputed from scratch and matched exactly. Recorded results: `kamper` (all 5), `straffer`, `rode_kort`, `clean_sheets`, `kamp_flest_scoringer`, `keeper_flest_saves`, `kamp_flest_skudd`, `kamp_flest_pasninger`, `hoyeste_ballbesittelse`, `var_omgjoringer` - everything that scored non-zero for at least one player. `gule_kort`, `lag_flest_gule`, `kamp_flest_kort`, `lag_flest_scoringer`, `totalt_mal`, and `spiller_mest_fpl` are left unrecorded (nobody scored on them). One case of two players giving the same answer with different capitalization (`Trafford`/`trafford` for `keeper_flest_saves`) was normalized to one spelling in `submissions.csv` so the case-sensitive equality check in `computeSeasonScoring` scores both correctly - the spreadsheet's own point totals confirm both were meant to count as correct.
+
+### `2022/23` import
+
+The oldest season in the group's tracked history - 7 matches, 4 players (Kriss, Seb, Simon, Morten). This season predates the `fpl_score`, `var_omgjoringer`, `kamp_flest_skudd`, `kamp_flest_pasninger`, and `hoyeste_ballbesittelse` bets, so those categories simply have no rows for `2022/23` (correctly rendered as "no submission" rather than left unrecorded/pending, since the bet genuinely didn't exist that year).
+
+Two of that year's categories - `gule_kort` and `totalt_mal` - are explicitly labeled "(Handicap)" in the spreadsheet and used closest-guess-wins partial credit instead of exact-match-or-nothing (e.g. `gule_kort`: guesses of 18/19/20/30 against the real total scored 3/2/1/0 points respectively). Two more - `lag_flest_scoringer` and `kamp_flest_scoringer` - show every player scoring the same points despite giving different answers, consistent with genuine ties that day. None of this fits `computeSeasonScoring`'s one-shared-answer-per-category model, so `submissions.csv` gained an `override_points` column (see its schema section above): when set, it's used as that row's points directly instead of comparing `answer` against `results.csv`. It's populated only for these four categories in this one season - every other row, in every other season, leaves it blank and scores the normal way.
+
+All 4 final totals (Kriss 23, Seb 11, Simon 15, Morten 6) were recomputed from scratch and matched exactly. Getting there caught two real transcription bugs before shipping: a misread spreadsheet column (Seb and Simon's `clean_sheets` guesses were swapped in an early pass) and a scoring bug where Morten's reversed-order match guess (`WOL-EVE` instead of `EVE-WOL`, same fixture) would have accidentally matched the actual answer and over-awarded him a point that the original spreadsheet didn't give him - fixed with a same-season `override_points` of `0` on that one row.
 
 ### Live match data
 
