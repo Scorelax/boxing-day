@@ -30,6 +30,11 @@
   .bar{display:flex;align-items:center;justify-content:space-between;height:62px}
   .brand{display:flex;align-items:center;gap:11px;font-family:'Archivo',sans-serif;font-weight:800;font-size:15px}
   .bar .dot{width:12px;height:12px;border-radius:3px;background:var(--magenta);box-shadow:0 0 16px var(--magenta)}
+  .toolnav{display:flex;align-items:center;gap:22px;flex-wrap:wrap}
+  .tool-link{font-family:'Archivo',sans-serif;font-weight:800;font-size:15px;color:var(--muted);text-decoration:none;transition:color .2s}
+  .tool-link:hover{color:var(--text)}
+  .tool-link.soon{opacity:.4;cursor:default}
+  .tool-link.soon:hover{color:var(--muted)}
 
   .hero{padding:56px 0 24px}
   .hero .eyebrow{margin-bottom:16px}
@@ -85,7 +90,11 @@
 
 <header>
   <div class="wrap bar">
-    <div class="brand"><span class="dot"></span> BOXING DAY</div>
+    <div class="toolnav">
+      <a class="tool-link" href="https://scorelax.github.io/fpl-draft-stats/">FANTASYPL DRAFT</a>
+      <div class="brand" aria-current="page"><span class="dot"></span> BOXING DAY</div>
+      <span class="tool-link soon">TABLE PREDICTIONS</span>
+    </div>
   </div>
 </header>
 
@@ -297,7 +306,7 @@ function scoreMatch(pred,actual){
         <tbody>${breakdownRows}</tbody>
       </table></div>
 
-      <div class="subhead" style="margin-top:28px">Squads</div>
+      <div class="subhead" style="margin-top:28px">FPL Squad points</div>
       ${squadBlocks}`;
   }
 
