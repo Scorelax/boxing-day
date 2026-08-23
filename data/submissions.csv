@@ -91,3 +91,147 @@ season,player_name,submitted_at,category_id,ref_id,answer,issue_number
 2025/26,Morten,2025-12-20T00:00:00+00:00,hoyeste_ballbesittelse,,70,manual
 2025/26,Morten,2025-12-20T00:00:00+00:00,fpl_score,,25,manual
 2025/26,Morten,2025-12-20T00:00:00+00:00,var_omgjoringer,,2,manual
+2024/25,Kriss,2024-12-20T00:00:00+00:00,kamper,2024_MCI_EVE,2-0,manual
+2024/25,Kriss,2024-12-20T00:00:00+00:00,kamper,2024_BOU_CRY,1-1,manual
+2024/25,Kriss,2024-12-20T00:00:00+00:00,kamper,2024_CHE_FUL,1-1,manual
+2024/25,Kriss,2024-12-20T00:00:00+00:00,kamper,2024_NEW_AVL,2-1,manual
+2024/25,Kriss,2024-12-20T00:00:00+00:00,kamper,2024_NFO_TOT,2-3,manual
+2024/25,Kriss,2024-12-20T00:00:00+00:00,kamper,2024_SOU_WHU,0-1,manual
+2024/25,Kriss,2024-12-20T00:00:00+00:00,kamper,2024_WOL_MUN,1-1,manual
+2024/25,Kriss,2024-12-20T00:00:00+00:00,kamper,2024_LIV_LEI,4-0,manual
+2024/25,Kriss,2024-12-20T00:00:00+00:00,gule_kort,,26,manual
+2024/25,Kriss,2024-12-20T00:00:00+00:00,rode_kort,,1,manual
+2024/25,Kriss,2024-12-20T00:00:00+00:00,straffer,,2,manual
+2024/25,Kriss,2024-12-20T00:00:00+00:00,lag_flest_gule,,Aston Villa,manual
+2024/25,Kriss,2024-12-20T00:00:00+00:00,kamp_flest_kort,,2024_CHE_FUL,manual
+2024/25,Kriss,2024-12-20T00:00:00+00:00,lag_flest_scoringer,,Liverpool,manual
+2024/25,Kriss,2024-12-20T00:00:00+00:00,kamp_flest_scoringer,,2024_NFO_TOT,manual
+2024/25,Kriss,2024-12-20T00:00:00+00:00,clean_sheets,,3,manual
+2024/25,Kriss,2024-12-20T00:00:00+00:00,totalt_mal,,20,manual
+2024/25,Kriss,2024-12-20T00:00:00+00:00,spiller_mest_fpl,,M.Salah(MID) - LIV,manual
+2024/25,Kriss,2024-12-20T00:00:00+00:00,keeper_flest_saves,,Ramsdale(GK) - SOU,manual
+2024/25,Kriss,2024-12-20T00:00:00+00:00,kamp_flest_skudd,,2024_NFO_TOT,manual
+2024/25,Kriss,2024-12-20T00:00:00+00:00,kamp_flest_pasninger,,2024_LIV_LEI,manual
+2024/25,Kriss,2024-12-20T00:00:00+00:00,hoyeste_ballbesittelse,,71,manual
+2024/25,Kriss,2024-12-20T00:00:00+00:00,var_omgjoringer,,4,manual
+2024/25,Kriss,2024-12-20T00:00:00+00:00,fpl_score,,39,manual
+2024/25,Seb,2024-12-20T00:00:00+00:00,kamper,2024_MCI_EVE,2-1,manual
+2024/25,Seb,2024-12-20T00:00:00+00:00,kamper,2024_BOU_CRY,2-2,manual
+2024/25,Seb,2024-12-20T00:00:00+00:00,kamper,2024_CHE_FUL,3-1,manual
+2024/25,Seb,2024-12-20T00:00:00+00:00,kamper,2024_NEW_AVL,0-0,manual
+2024/25,Seb,2024-12-20T00:00:00+00:00,kamper,2024_NFO_TOT,3-4,manual
+2024/25,Seb,2024-12-20T00:00:00+00:00,kamper,2024_SOU_WHU,1-1,manual
+2024/25,Seb,2024-12-20T00:00:00+00:00,kamper,2024_WOL_MUN,3-1,manual
+2024/25,Seb,2024-12-20T00:00:00+00:00,kamper,2024_LIV_LEI,5-0,manual
+2024/25,Seb,2024-12-20T00:00:00+00:00,gule_kort,,21,manual
+2024/25,Seb,2024-12-20T00:00:00+00:00,rode_kort,,1,manual
+2024/25,Seb,2024-12-20T00:00:00+00:00,straffer,,2,manual
+2024/25,Seb,2024-12-20T00:00:00+00:00,lag_flest_gule,,Leicester,manual
+2024/25,Seb,2024-12-20T00:00:00+00:00,kamp_flest_kort,,2024_NEW_AVL,manual
+2024/25,Seb,2024-12-20T00:00:00+00:00,lag_flest_scoringer,,Liverpool,manual
+2024/25,Seb,2024-12-20T00:00:00+00:00,kamp_flest_scoringer,,2024_NFO_TOT,manual
+2024/25,Seb,2024-12-20T00:00:00+00:00,clean_sheets,,2,manual
+2024/25,Seb,2024-12-20T00:00:00+00:00,totalt_mal,,29,manual
+2024/25,Seb,2024-12-20T00:00:00+00:00,spiller_mest_fpl,,M.Salah(MID) - LIV,manual
+2024/25,Seb,2024-12-20T00:00:00+00:00,keeper_flest_saves,,Pickford(GK) - EVE,manual
+2024/25,Seb,2024-12-20T00:00:00+00:00,kamp_flest_skudd,,2024_NFO_TOT,manual
+2024/25,Seb,2024-12-20T00:00:00+00:00,kamp_flest_pasninger,,2024_LIV_LEI,manual
+2024/25,Seb,2024-12-20T00:00:00+00:00,hoyeste_ballbesittelse,,68,manual
+2024/25,Seb,2024-12-20T00:00:00+00:00,var_omgjoringer,,3,manual
+2024/25,Seb,2024-12-20T00:00:00+00:00,fpl_score,,40,manual
+2024/25,Simon,2024-12-20T00:00:00+00:00,kamper,2024_MCI_EVE,1-0,manual
+2024/25,Simon,2024-12-20T00:00:00+00:00,kamper,2024_BOU_CRY,2-1,manual
+2024/25,Simon,2024-12-20T00:00:00+00:00,kamper,2024_CHE_FUL,3-0,manual
+2024/25,Simon,2024-12-20T00:00:00+00:00,kamper,2024_NEW_AVL,0-0,manual
+2024/25,Simon,2024-12-20T00:00:00+00:00,kamper,2024_NFO_TOT,1-2,manual
+2024/25,Simon,2024-12-20T00:00:00+00:00,kamper,2024_SOU_WHU,0-0,manual
+2024/25,Simon,2024-12-20T00:00:00+00:00,kamper,2024_WOL_MUN,2-1,manual
+2024/25,Simon,2024-12-20T00:00:00+00:00,kamper,2024_LIV_LEI,3-1,manual
+2024/25,Simon,2024-12-20T00:00:00+00:00,gule_kort,,18,manual
+2024/25,Simon,2024-12-20T00:00:00+00:00,rode_kort,,0,manual
+2024/25,Simon,2024-12-20T00:00:00+00:00,straffer,,1,manual
+2024/25,Simon,2024-12-20T00:00:00+00:00,lag_flest_gule,,Wolves,manual
+2024/25,Simon,2024-12-20T00:00:00+00:00,kamp_flest_kort,,2024_WOL_MUN,manual
+2024/25,Simon,2024-12-20T00:00:00+00:00,lag_flest_scoringer,,Liverpool,manual
+2024/25,Simon,2024-12-20T00:00:00+00:00,kamp_flest_scoringer,,2024_CHE_FUL,manual
+2024/25,Simon,2024-12-20T00:00:00+00:00,clean_sheets,,5,manual
+2024/25,Simon,2024-12-20T00:00:00+00:00,totalt_mal,,21,manual
+2024/25,Simon,2024-12-20T00:00:00+00:00,spiller_mest_fpl,,M.Salah(MID) - LIV,manual
+2024/25,Simon,2024-12-20T00:00:00+00:00,keeper_flest_saves,,Leno(GK) - FUL,manual
+2024/25,Simon,2024-12-20T00:00:00+00:00,kamp_flest_skudd,,2024_WOL_MUN,manual
+2024/25,Simon,2024-12-20T00:00:00+00:00,kamp_flest_pasninger,,2024_MCI_EVE,manual
+2024/25,Simon,2024-12-20T00:00:00+00:00,hoyeste_ballbesittelse,,65,manual
+2024/25,Simon,2024-12-20T00:00:00+00:00,var_omgjoringer,,5,manual
+2024/25,Simon,2024-12-20T00:00:00+00:00,fpl_score,,40,manual
+2024/25,Morten,2024-12-20T00:00:00+00:00,kamper,2024_MCI_EVE,3-0,manual
+2024/25,Morten,2024-12-20T00:00:00+00:00,kamper,2024_BOU_CRY,2-0,manual
+2024/25,Morten,2024-12-20T00:00:00+00:00,kamper,2024_CHE_FUL,3-1,manual
+2024/25,Morten,2024-12-20T00:00:00+00:00,kamper,2024_NEW_AVL,2-1,manual
+2024/25,Morten,2024-12-20T00:00:00+00:00,kamper,2024_NFO_TOT,2-3,manual
+2024/25,Morten,2024-12-20T00:00:00+00:00,kamper,2024_SOU_WHU,1-0,manual
+2024/25,Morten,2024-12-20T00:00:00+00:00,kamper,2024_WOL_MUN,1-2,manual
+2024/25,Morten,2024-12-20T00:00:00+00:00,kamper,2024_LIV_LEI,3-1,manual
+2024/25,Morten,2024-12-20T00:00:00+00:00,gule_kort,,25,manual
+2024/25,Morten,2024-12-20T00:00:00+00:00,rode_kort,,0,manual
+2024/25,Morten,2024-12-20T00:00:00+00:00,straffer,,1,manual
+2024/25,Morten,2024-12-20T00:00:00+00:00,lag_flest_gule,,Everton,manual
+2024/25,Morten,2024-12-20T00:00:00+00:00,kamp_flest_kort,,2024_NEW_AVL,manual
+2024/25,Morten,2024-12-20T00:00:00+00:00,lag_flest_scoringer,,Tottenham,manual
+2024/25,Morten,2024-12-20T00:00:00+00:00,kamp_flest_scoringer,,2024_NFO_TOT,manual
+2024/25,Morten,2024-12-20T00:00:00+00:00,clean_sheets,,3,manual
+2024/25,Morten,2024-12-20T00:00:00+00:00,totalt_mal,,24,manual
+2024/25,Morten,2024-12-20T00:00:00+00:00,spiller_mest_fpl,,M.Salah(MID) - LIV,manual
+2024/25,Morten,2024-12-20T00:00:00+00:00,keeper_flest_saves,,Arrizabalaga(GK) - BOU,manual
+2024/25,Morten,2024-12-20T00:00:00+00:00,kamp_flest_skudd,,2024_NFO_TOT,manual
+2024/25,Morten,2024-12-20T00:00:00+00:00,kamp_flest_pasninger,,2024_LIV_LEI,manual
+2024/25,Morten,2024-12-20T00:00:00+00:00,hoyeste_ballbesittelse,,72,manual
+2024/25,Morten,2024-12-20T00:00:00+00:00,var_omgjoringer,,4,manual
+2024/25,Morten,2024-12-20T00:00:00+00:00,fpl_score,,43,manual
+2024/25,Chat GPT,2024-12-20T00:00:00+00:00,kamper,2024_MCI_EVE,3-0,manual
+2024/25,Chat GPT,2024-12-20T00:00:00+00:00,kamper,2024_BOU_CRY,1-1,manual
+2024/25,Chat GPT,2024-12-20T00:00:00+00:00,kamper,2024_CHE_FUL,2-1,manual
+2024/25,Chat GPT,2024-12-20T00:00:00+00:00,kamper,2024_NEW_AVL,2-2,manual
+2024/25,Chat GPT,2024-12-20T00:00:00+00:00,kamper,2024_NFO_TOT,2-0,manual
+2024/25,Chat GPT,2024-12-20T00:00:00+00:00,kamper,2024_SOU_WHU,1-2,manual
+2024/25,Chat GPT,2024-12-20T00:00:00+00:00,kamper,2024_WOL_MUN,0-2,manual
+2024/25,Chat GPT,2024-12-20T00:00:00+00:00,kamper,2024_LIV_LEI,4-1,manual
+2024/25,Chat GPT,2024-12-20T00:00:00+00:00,gule_kort,,26,manual
+2024/25,Chat GPT,2024-12-20T00:00:00+00:00,rode_kort,,2,manual
+2024/25,Chat GPT,2024-12-20T00:00:00+00:00,straffer,,3,manual
+2024/25,Chat GPT,2024-12-20T00:00:00+00:00,lag_flest_gule,,Nottingham Forest,manual
+2024/25,Chat GPT,2024-12-20T00:00:00+00:00,kamp_flest_kort,,2024_SOU_WHU,manual
+2024/25,Chat GPT,2024-12-20T00:00:00+00:00,lag_flest_scoringer,,Liverpool,manual
+2024/25,Chat GPT,2024-12-20T00:00:00+00:00,kamp_flest_scoringer,,2024_NEW_AVL,manual
+2024/25,Chat GPT,2024-12-20T00:00:00+00:00,clean_sheets,,4,manual
+2024/25,Chat GPT,2024-12-20T00:00:00+00:00,totalt_mal,,27,manual
+2024/25,Chat GPT,2024-12-20T00:00:00+00:00,spiller_mest_fpl,,M.Salah(MID) - LIV,manual
+2024/25,Chat GPT,2024-12-20T00:00:00+00:00,keeper_flest_saves,,Sels(GK) - NFO,manual
+2024/25,Chat GPT,2024-12-20T00:00:00+00:00,kamp_flest_skudd,,2024_LIV_LEI,manual
+2024/25,Chat GPT,2024-12-20T00:00:00+00:00,kamp_flest_pasninger,,2024_MCI_EVE,manual
+2024/25,Chat GPT,2024-12-20T00:00:00+00:00,hoyeste_ballbesittelse,,72,manual
+2024/25,Chat GPT,2024-12-20T00:00:00+00:00,var_omgjoringer,,5,manual
+2024/25,Chat GPT,2024-12-20T00:00:00+00:00,fpl_score,,28,manual
+2024/25,Leo,2024-12-20T00:00:00+00:00,kamper,2024_MCI_EVE,3-1,manual
+2024/25,Leo,2024-12-20T00:00:00+00:00,kamper,2024_BOU_CRY,0-0,manual
+2024/25,Leo,2024-12-20T00:00:00+00:00,kamper,2024_CHE_FUL,3-1,manual
+2024/25,Leo,2024-12-20T00:00:00+00:00,kamper,2024_NEW_AVL,2-1,manual
+2024/25,Leo,2024-12-20T00:00:00+00:00,kamper,2024_NFO_TOT,2-2,manual
+2024/25,Leo,2024-12-20T00:00:00+00:00,kamper,2024_SOU_WHU,1-1,manual
+2024/25,Leo,2024-12-20T00:00:00+00:00,kamper,2024_WOL_MUN,1-1,manual
+2024/25,Leo,2024-12-20T00:00:00+00:00,kamper,2024_LIV_LEI,4-0,manual
+2024/25,Leo,2024-12-20T00:00:00+00:00,gule_kort,,28,manual
+2024/25,Leo,2024-12-20T00:00:00+00:00,rode_kort,,0,manual
+2024/25,Leo,2024-12-20T00:00:00+00:00,straffer,,1,manual
+2024/25,Leo,2024-12-20T00:00:00+00:00,lag_flest_gule,,Aston Villa,manual
+2024/25,Leo,2024-12-20T00:00:00+00:00,kamp_flest_kort,,2024_NEW_AVL,manual
+2024/25,Leo,2024-12-20T00:00:00+00:00,lag_flest_scoringer,,Liverpool,manual
+2024/25,Leo,2024-12-20T00:00:00+00:00,kamp_flest_scoringer,,2024_NFO_TOT,manual
+2024/25,Leo,2024-12-20T00:00:00+00:00,clean_sheets,,3,manual
+2024/25,Leo,2024-12-20T00:00:00+00:00,totalt_mal,,23,manual
+2024/25,Leo,2024-12-20T00:00:00+00:00,spiller_mest_fpl,,M.Salah(MID) - LIV,manual
+2024/25,Leo,2024-12-20T00:00:00+00:00,keeper_flest_saves,,Pickford(GK) - EVE,manual
+2024/25,Leo,2024-12-20T00:00:00+00:00,kamp_flest_skudd,,2024_NFO_TOT,manual
+2024/25,Leo,2024-12-20T00:00:00+00:00,kamp_flest_pasninger,,2024_LIV_LEI,manual
+2024/25,Leo,2024-12-20T00:00:00+00:00,hoyeste_ballbesittelse,,69,manual
+2024/25,Leo,2024-12-20T00:00:00+00:00,var_omgjoringer,,3,manual
+2024/25,Leo,2024-12-20T00:00:00+00:00,fpl_score,,41,manual

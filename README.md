@@ -150,7 +150,7 @@ This repo is scaffolding, set up ahead of the 2026-12-26 event while the plan is
 Not built yet:
 
 1. **Automated `results.csv` / `player-points.csv` filling.** Both are hand-edited after Boxing Day for now. The data needed exists (see "Live match data" below), but writing the fetch script is future work - realistically once we're closer to actually needing it, since some of that data source's specifics (penalties, VAR overturns, and the FPL `multiplier` field's exact behavior) still need verifying against real finished matches/gameweeks first.
-2. **Historical data for seasons before `2025/26`** - the group has results tracked further back in a Google Sheet; importing those is a separate step once provided.
+2. **Historical data for seasons before `2024/25`** - the group has results tracked further back in a Google Sheet; importing those is a separate step once provided.
 
 ### `2025/26` import
 
@@ -159,6 +159,12 @@ Imported from the group's spreadsheet as the first real test of the whole system
 Left unrecorded in `results.csv` (nobody's spreadsheet answer was correct, so there's no way to reverse-engineer the true value from points alone, and the relevant match/gameweek stats aren't available from the free data sources used elsewhere in this project): `straffer` (penalties), `spiller_mest_fpl`, `keeper_flest_saves`, `var_omgjoringer`. Confirmed this doesn't matter for standings - all four were worth 0 points to everyone regardless (nobody guessed right), so leaving them unrecorded changes nothing about anyone's total; recording them is only useful for its own sake, not required for correct scoring.
 
 `hoyeste_ballbesittelse` turned out to be a `number` category (guess the actual highest single-team possession %, as a whole number - **round down**, so 66.9% counts as 66), not `team_pick` as originally defined - fixed in `categories.csv`. The real answer (Liverpool, 66.6% → 66) is now recorded; nobody guessed it, so this didn't change anyone's total either, but it's a real recorded result rather than a pending one.
+
+### `2024/25` import
+
+Imported the same way from the group's spreadsheet - 8 matches, 6 players (Kriss, Seb, Simon, Morten, Chat GPT, Leo), and every kamper/`straffer`/`lag_flest_gule`/`keeper_flest_saves` result needed to reproduce the spreadsheet's points exactly. The 8 exact match scores were cross-checked against real match reports (not just derived from points), which caught one transcription slip in the sheet parse (a swapped prediction) before it shipped. All 6 players' final totals (Kriss 6, Seb 3, Simon 9, Morten 12, Chat GPT 4, Leo 8) were recomputed from scratch by the site's scoring code and matched exactly.
+
+Same as `2025/26`: `gule_kort`, `rode_kort`, `lag_flest_scoringer`, `kamp_flest_kort`, `kamp_flest_scoringer`, `clean_sheets`, `totalt_mal`, `spiller_mest_fpl`, `kamp_flest_skudd`, `kamp_flest_pasninger`, `hoyeste_ballbesittelse`, and `var_omgjoringer` are left unrecorded - nobody's guess was correct for any of them, so they're worth 0 to everyone regardless of the true value. Match IDs for this season are synthetic (`2024_<HOMEABBR>_<AWAYABBR>`) rather than real pulselive fixture IDs, since they only need to be stable join keys within this dataset.
 
 ### Live match data
 

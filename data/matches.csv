@@ -6,3 +6,11 @@ season,match_id,home_team,home_team_id,home_abbr,away_team,away_team_id,away_abb
 2025/26,124966,Liverpool,10,LIV,Wolverhampton Wanderers,38,WOL,"Sat 27 Dec 2025, 15:00 GMT",2,1
 2025/26,124970,West Ham United,25,WHU,Fulham,34,FUL,"Sat 27 Dec 2025, 15:00 GMT",0,1
 2025/26,124964,Chelsea,4,CHE,Aston Villa,2,AVL,"Sat 27 Dec 2025, 17:30 GMT",1,2
+2024/25,2024_MCI_EVE,Manchester City,11,MCI,Everton,7,EVE,"Thu 26 Dec 2024, 12:30 GMT",1,1
+2024/25,2024_BOU_CRY,Bournemouth,127,BOU,Crystal Palace,6,CRY,"Thu 26 Dec 2024, 15:00 GMT",0,0
+2024/25,2024_CHE_FUL,Chelsea,4,CHE,Fulham,34,FUL,"Thu 26 Dec 2024, 15:00 GMT",1,2
+2024/25,2024_NEW_AVL,Newcastle United,23,NEW,Aston Villa,2,AVL,"Thu 26 Dec 2024, 15:00 GMT",3,0
+2024/25,2024_NFO_TOT,Nottingham Forest,15,NFO,Tottenham Hotspur,21,TOT,"Thu 26 Dec 2024, 15:00 GMT",1,0
+2024/25,2024_SOU_WHU,Southampton,20,SOU,West Ham United,25,WHU,"Thu 26 Dec 2024, 15:00 GMT",0,1
+2024/25,2024_WOL_MUN,Wolverhampton Wanderers,38,WOL,Manchester United,12,MUN,"Thu 26 Dec 2024, 17:30 GMT",2,0
+2024/25,2024_LIV_LEI,Liverpool,10,LIV,Leicester City,26,LEI,"Thu 26 Dec 2024, 20:00 GMT",3,1
