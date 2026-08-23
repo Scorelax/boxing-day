@@ -57,15 +57,21 @@ def field_dropdown(field_id, label, options):
 
 
 def main():
-    matches = read_csv(DATA / "matches.csv")
-    categories = read_csv(DATA / "categories.csv")
-    players = read_csv(DATA / "eligible-players.csv")
-
-    if not matches or not players:
-        print("No fixtures/eligible players yet - skipping issue form generation.")
+    current_season_file = ROOT / "data" / "current-season.txt"
+    season = current_season_file.read_text(encoding="utf-8").strip() if current_season_file.exists() else ""
+    if not season:
+        print("current-season.txt is empty - no cycle open, skipping issue form generation.")
         return
 
-    year = matches[0]["season"]
+    matches = [m for m in read_csv(DATA / "matches.csv") if m["season"] == season]
+    categories = read_csv(DATA / "categories.csv")
+    players = [p for p in read_csv(DATA / "eligible-players.csv") if p["season"] == season]
+
+    if not matches or not players:
+        print(f"No fixtures/eligible players for {season} yet - skipping issue form generation.")
+        return
+
+    year = season
     team_names = sorted({m["home_team"] for m in matches} | {m["away_team"] for m in matches})
     match_labels = [f'{m["home_team"]} vs {m["away_team"]}' for m in matches]
 

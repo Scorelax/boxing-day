@@ -1,5 +1,5 @@
 id,label_en,label_no,type,position_filter,points,notes
-kamper,Matches,Kamper,match_score,,,"One exact-score prediction per Boxing Day match (see matches.csv), not a single category. Scored 3pts exact score / 1pt correct result (W/D/L) / 0 otherwise, per match"
+kamper,Matches,Kamper,match_score,,,Exact-score prediction
 gule_kort,Correct number of yellow cards,Riktig antall gule kort,number,,5,Total yellow cards across all matches
 rode_kort,Correct number of red cards,Riktig antall røde kort,number,,3,Total red cards across all matches
 straffer,Correct number of penalties,Riktig antall straffer,number,,3,Total penalties awarded across all matches
@@ -14,5 +14,5 @@ keeper_flest_saves,Goalkeeper with most saves (FPL),Keeper med flest saves (FPL)
 kamp_flest_skudd,Match with most shots,Kamp med flest skudd,match_pick,,2,Pick one of the day's matches
 kamp_flest_pasninger,Match with most passes,Kamp med flest pasninger,match_pick,,2,Pick one of the day's matches
 hoyeste_ballbesittelse,Highest possession (%),Høyeste ballbesittelse (%),team_pick,,4,Pick one team from the pool of clubs playing
-fpl_score,FPL score,FPL score,fpl_squad,,3,"Combined FPL points of the player's own 11-player squad, see FPL squad rules in README. Scored by ranking: highest total among submitters wins the points (ties all win it)"
+fpl_score,FPL score,FPL score,fpl_squad,,3,Combined FPL squad points
 var_omgjoringer,Number of VAR overturns,Antall VAR-omgjøringer,number,,2,Total VAR overturns across all matches

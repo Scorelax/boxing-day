@@ -71,15 +71,21 @@ def main():
         print(f"Issue #{issue_number} doesn't have the '{SUBMISSION_LABEL}' label - ignoring.")
         return
 
-    matches = read_csv(DATA / "matches.csv")
+    current_season_file = DATA / "current-season.txt"
+    season = current_season_file.read_text(encoding="utf-8").strip() if current_season_file.exists() else ""
+    if not season:
+        comment(issue_number, "Submissions aren't open right now (no season is currently active). Try again closer to Boxing Day.")
+        return
+
+    matches = [m for m in read_csv(DATA / "matches.csv") if m["season"] == season]
     categories = read_csv(DATA / "categories.csv")
-    players = read_csv(DATA / "eligible-players.csv")
+    players = [p for p in read_csv(DATA / "eligible-players.csv") if p["season"] == season]
     if not matches or not players:
         comment(issue_number, "Submissions aren't open yet for this year (fixtures/eligible players haven't been fetched). Try again closer to Boxing Day.")
         return
 
-    season = matches[0]["season"]
-    deadline = datetime(int(season), DEADLINE_MONTH, DEADLINE_DAY, DEADLINE_HOUR, DEADLINE_MINUTE, tzinfo=timezone.utc)
+    deadline_year = int(season.split("/")[0])
+    deadline = datetime(deadline_year, DEADLINE_MONTH, DEADLINE_DAY, DEADLINE_HOUR, DEADLINE_MINUTE, tzinfo=timezone.utc)
     if datetime.now(timezone.utc) > deadline:
         comment(issue_number, "Submissions closed at 12:30 UK / 13:30 Norway time on Boxing Day - this entry can no longer be recorded or changed. Whatever was recorded before the deadline stands.")
         return

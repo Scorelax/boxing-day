@@ -1,0 +1,34 @@
+name: Archive the Boxing Day season
+
+on:
+  schedule:
+    - cron: "0 9 27 12 *"   # 09:00 UTC on Dec 27 every year - the morning after
+  workflow_dispatch:          # manual runs from the Actions tab, e.g. for testing
+
+permissions:
+  contents: write
+
+jobs:
+  archive:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Clear current-season.txt
+        run: python scripts/archive_season.py
+
+      - name: Commit and push if changed
+        run: |
+          if git diff --quiet -- data/current-season.txt; then
+            echo "No changes."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/current-season.txt
+          git commit -m "Archive season: $(date -u +%Y-%m-%d)"
+          git push

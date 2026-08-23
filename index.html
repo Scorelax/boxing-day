@@ -35,11 +35,13 @@
   .hero .eyebrow{margin-bottom:16px}
   .hero h1{font-size:clamp(38px,8vw,80px);text-transform:uppercase}
 
-  .tabs{display:flex;gap:8px;flex-wrap:wrap;margin:28px 0 32px}
+  .tabs{display:flex;gap:8px;flex-wrap:wrap;margin:20px 0}
+  .tabs.main{margin-top:28px}
   .tab{background:var(--panel);border:1px solid var(--line);color:var(--muted);border-radius:100px;
     padding:9px 20px;font-family:'Archivo',sans-serif;font-weight:700;font-size:13px;cursor:pointer;transition:all .2s}
   .tab:hover{color:var(--text);border-color:var(--line-strong)}
   .tab.active{background:var(--magenta);border-color:var(--magenta);color:#fff}
+  .tab.small{padding:7px 16px;font-size:12px}
 
   .panel{padding-bottom:40px}
   .subhead{font-family:'Archivo',sans-serif;font-weight:800;font-size:14px;text-transform:uppercase;
@@ -58,6 +60,9 @@
     color:var(--mint);border:1px solid rgba(72,230,194,.35);border-radius:100px;padding:2px 9px}
   .tag.number{color:var(--gold);border-color:rgba(255,201,77,.35)}
   .tag.squad{color:var(--magenta);border-color:rgba(255,46,126,.35)}
+  .pts{font-size:11px;font-weight:800;margin-left:5px}
+  .pts.win{color:var(--mint)}
+  .pts.zero{color:var(--muted)}
 
   .rec{border:1px solid var(--line);border-radius:14px;background:var(--panel);padding:20px;margin-bottom:16px}
   .rec .cap{font-family:'Archivo',sans-serif;font-weight:700;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
@@ -90,20 +95,22 @@
     <h1 class="disp">Boxing Day</h1>
   </section>
 
-  <div class="tabs" id="tabBar">
+  <div class="tabs main" id="tabBar">
     <button class="tab active" data-tab="rules">Rules</button>
     <button class="tab" data-tab="overview">Overview</button>
-    <button class="tab" data-tab="leaderboard">Leaderboard</button>
     <button class="tab" data-tab="edit">Edit form</button>
   </div>
 
   <div class="panel" id="panel-rules"></div>
   <div class="panel" id="panel-overview" style="display:none"></div>
-  <div class="panel" id="panel-leaderboard" style="display:none"></div>
   <div class="panel" id="panel-edit" style="display:none"></div>
+
+  <div class="subhead">History</div>
+  <div class="tabs" id="historyTabs"></div>
+  <div class="panel" id="panel-history" style="display:none"></div>
 </main>
 
-<footer><div class="wrap">Boxing Day · loaded from <b>data/matches.csv</b> + <b>data/categories.csv</b> + <b>data/eligible-players.csv</b> + <b>data/submissions.csv</b> + <b>data/results.csv</b> + <b>data/player-points.csv</b></div></footer>
+<footer><div class="wrap">Boxing Day · loaded from <b>data/matches.csv</b> + <b>data/categories.csv</b> + <b>data/eligible-players.csv</b> + <b>data/submissions.csv</b> + <b>data/results.csv</b> + <b>data/player-points.csv</b> + <b>data/current-season.txt</b></div></footer>
 
 <script>
 "use strict";
@@ -131,33 +138,166 @@ async function loadCSVSoft(path){
   try{return await loadCSV(path);}
   catch(err){console.warn(`${path} not available yet:`,err.message);return[];}
 }
+async function loadTextSoft(path){
+  try{const res=await fetch(path);if(!res.ok)throw new Error(`HTTP ${res.status}`);return(await res.text()).trim();}
+  catch(err){console.warn(`${path} not available yet:`,err.message);return"";}
+}
 const TYPE_LABEL={match_score:"score",number:"number",team_pick:"team",match_pick:"match",player_pick:"player",fpl_squad:"squad"};
 const GH_REPO="Scorelax/boxing-day";
 
+function scoreMatch(pred,actual){
+  if(pred===actual)return 3;
+  const [ph,pa]=pred.split("-").map(Number),[ah,aa]=actual.split("-").map(Number);
+  const predRes=ph>pa?"H":(ph===pa?"D":"A"),actRes=ah>aa?"H":(ah===aa?"D":"A");
+  return predRes===actRes?1:0;
+}
+
 (async function(){
-  let matches,categories;
+  let categories;
   try{
-    [matches,categories]=await Promise.all([loadCSV("data/matches.csv"),loadCSV("data/categories.csv")]);
+    categories=await loadCSV("data/categories.csv");
   }catch(err){
     document.querySelector("main").innerHTML=`<div class="rec" style="margin:60px 0"><div class="cap">Couldn't load data</div><div class="det">${err.message}<br><br>If you opened this file directly from disk, run a local server instead — e.g. <code>python -m http.server</code> — then open the printed http://localhost address.</div></div>`;
     return;
   }
-  const [players,submissions,results,playerPoints]=await Promise.all([
-    loadCSVSoft("data/eligible-players.csv"),loadCSVSoft("data/submissions.csv"),
-    loadCSVSoft("data/results.csv"),loadCSVSoft("data/player-points.csv"),
+  const [matches,players,submissions,results,playerPoints,currentSeason]=await Promise.all([
+    loadCSVSoft("data/matches.csv"),loadCSVSoft("data/eligible-players.csv"),
+    loadCSVSoft("data/submissions.csv"),loadCSVSoft("data/results.csv"),
+    loadCSVSoft("data/player-points.csv"),loadTextSoft("data/current-season.txt"),
   ]);
 
-  const year=matches[0]?.season||new Date().getUTCFullYear();
-  document.getElementById("yearLabel").textContent=matches.length
-    ?`Boxing Day ${year} · ${matches.length} matches`
-    :`Boxing Day ${year}`;
+  const currentMatches=matches.filter(m=>m.season===currentSeason);
+  const currentPlayers=players.filter(p=>p.season===currentSeason);
+
+  document.getElementById("yearLabel").textContent=currentSeason
+    ?`Boxing Day ${currentSeason} · ${currentMatches.length} matches`
+    :`Yearly prediction pool`;
+
+  // ---------- shared: per-season scoring + rendering (used by Overview and History tabs) ----------
+  function computeSeasonScoring(season){
+    const seasonMatches=matches.filter(m=>m.season===season);
+    const seasonSubs=submissions.filter(s=>s.season===season);
+    const seasonResults=results.filter(r=>r.season===season);
+    const seasonPlayers=players.filter(p=>p.season===season);
+    const seasonPoints=playerPoints.filter(p=>p.season===season);
+
+    const byPlayer={};
+    seasonSubs.forEach(r=>{(byPlayer[r.player_name]=byPlayer[r.player_name]||[]).push(r);});
+    const names=Object.keys(byPlayer).sort();
+    const find=(rows,catId,refId)=>rows.find(r=>r.category_id===catId&&(refId===undefined||r.ref_id===refId));
+    const resultRow=(catId,refId="")=>seasonResults.find(r=>r.category_id===catId&&r.ref_id===refId);
+    const matchLabel=id=>{const m=seasonMatches.find(x=>x.match_id===id);return m?`${m.home_team} vs ${m.away_team}`:id;};
+    const playerLabel=id=>{const p=seasonPlayers.find(x=>x.element_id===id);return p?`${p.name} (${p.team})`:id;};
+
+    const kamperLines=seasonMatches.map(m=>{
+      const actual=resultRow("kamper",m.match_id);
+      return{label:`${m.home_team} vs ${m.away_team}`,cell:n=>{
+        const sub=find(byPlayer[n],"kamper",m.match_id);
+        if(!sub)return{text:"–",pts:null};
+        const pts=(actual&&actual.answer)?scoreMatch(sub.answer,actual.answer):null;
+        return{text:sub.answer,pts};
+      }};
+    });
+
+    const otherCats=categories.filter(c=>c.id!=="kamper"&&c.id!=="fpl_score");
+    const catLines=otherCats.map(c=>{
+      const actual=resultRow(c.id);
+      const pts=+c.points;
+      return{label:c.label_en,cell:n=>{
+        const sub=find(byPlayer[n],c.id);
+        if(!sub)return{text:"–",pts:null};
+        let text=sub.answer;
+        if(c.type==="match_pick")text=matchLabel(text);
+        if(c.type==="player_pick")text=playerLabel(text);
+        const scored=(actual&&actual.answer)?(sub.answer===actual.answer?pts:0):null;
+        return{text,pts:scored};
+      }};
+    });
+
+    const ptsById={};seasonPoints.forEach(p=>{ptsById[p.element_id]=+p.points;});
+    const fplTotals={};
+    names.forEach(n=>{
+      const sub=find(byPlayer[n],"fpl_score");
+      const ids=sub?sub.answer.split(";").filter(Boolean):[];
+      const allKnown=seasonPoints.length>0&&ids.length===11&&ids.every(id=>ptsById[id]!==undefined);
+      fplTotals[n]=allKnown?ids.reduce((s,id)=>s+ptsById[id],0):null;
+    });
+    const knownFpl=Object.values(fplTotals).filter(v=>v!==null);
+    const maxFpl=knownFpl.length?Math.max(...knownFpl):null;
+    const fplCat=categories.find(c=>c.id==="fpl_score");
+    const fplPts=fplCat?+fplCat.points:0;
+    const fplLine={label:"FPL score (own squad)",cell:n=>{
+      const sub=find(byPlayer[n],"fpl_score");
+      if(!sub)return{text:"–",pts:null};
+      const total=fplTotals[n];
+      if(total===null)return{text:"pending",pts:null};
+      return{text:`${total}pts`,pts:total===maxFpl?fplPts:0};
+    }};
+
+    const allLines=[...kamperLines,...catLines,fplLine];
+    const totals={};
+    names.forEach(n=>{totals[n]=allLines.reduce((s,l)=>{const c=l.cell(n);return s+(c.pts||0);},0);});
+
+    return{season,seasonSubs,seasonResults,seasonPlayers,byPlayer,names,allLines,totals};
+  }
+
+  function renderSeasonHTML(scoring){
+    const{names,allLines,totals,seasonResults,seasonSubs,seasonPlayers,byPlayer}=scoring;
+    if(!seasonSubs.length){
+      return `<div class="rec"><div class="cap">No forms submitted yet</div></div>`;
+    }
+    let standingsHTML="";
+    if(seasonResults.length){
+      const ranked=[...names].sort((a,b)=>totals[b]-totals[a]);
+      let rank=0,lastScore=null;
+      const rows=ranked.map((n,i)=>{
+        if(totals[n]!==lastScore){rank=i+1;lastScore=totals[n];}
+        return `<tr><td>${rank}</td><td>${n}</td><td><b>${totals[n]}</b></td></tr>`;
+      }).join("");
+      standingsHTML=`
+        <div class="subhead">Standings</div>
+        <div class="tablewrap"><table><thead><tr><th>#</th><th>Player</th><th>Points</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+    }
+
+    const breakdownRows=allLines.map(l=>{
+      const cells=names.map(n=>{
+        const c=l.cell(n);
+        const badge=c.pts===null?"":` <span class="pts ${c.pts>0?'win':'zero'}">${c.pts>0?'+':''}${c.pts}</span>`;
+        return `<td>${c.text}${badge}</td>`;
+      }).join("");
+      return `<tr><td>${l.label}</td>${cells}</tr>`;
+    }).join("");
+
+    const squadBlocks=names.map(n=>{
+      const sub=byPlayer[n].find(r=>r.category_id==="fpl_score");
+      const ids=sub?sub.answer.split(";").filter(Boolean):[];
+      const squad=ids.map(id=>seasonPlayers.find(p=>p.element_id===id)).filter(Boolean);
+      const byPos={GKP:[],DEF:[],MID:[],FWD:[]};
+      squad.forEach(p=>{if(byPos[p.position])byPos[p.position].push(p);});
+      const line=pos=>byPos[pos].map(p=>`${p.name} (${p.team})`).join(", ")||"–";
+      return `<div class="rec"><div class="cap">${n}</div>
+        <div class="det">GK: ${line("GKP")}<br>DEF: ${line("DEF")}<br>MID: ${line("MID")}<br>FWD: ${line("FWD")}</div></div>`;
+    }).join("");
+
+    return `
+      ${standingsHTML}
+      <div class="subhead" style="margin-top:${standingsHTML?'28px':'0'}">Predictions &amp; bets</div>
+      <div class="det" style="color:var(--muted);margin-bottom:14px">Points shown once results are recorded; "–" means no submission.</div>
+      <div class="tablewrap"><table>
+        <thead><tr><th>Category</th>${names.map(n=>`<th>${n}</th>`).join("")}</tr></thead>
+        <tbody>${breakdownRows}</tbody>
+      </table></div>
+
+      <div class="subhead" style="margin-top:28px">Squads</div>
+      ${squadBlocks}`;
+  }
 
   // ---------- tab: Rules ----------
-  const fixturesHTML=!matches.length
+  const fixturesHTML=!currentMatches.length
     ? `<div class="rec"><div class="cap">Fixtures not confirmed yet</div><div class="det">The Premier League only finalizes Boxing Day kickoff times/pairings shortly before the day. A scheduled job pulls the real fixtures (and the eligible-player pool for the squad bet) automatically on December 25th.</div></div>`
     : `<div class="tablewrap"><table>
         <thead><tr><th>Kickoff</th><th>Home</th><th></th><th>Away</th></tr></thead>
-        <tbody>${matches.map(m=>{
+        <tbody>${currentMatches.map(m=>{
           const d=new Date(m.kickoff);
           const when=isNaN(d)?m.kickoff:d.toLocaleString("en-GB",{weekday:"short",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"});
           const played=m.home_score!==""&&m.away_score!=="";
@@ -175,7 +315,7 @@ const GH_REPO="Scorelax/boxing-day";
       <div class="tablewrap"><table>
         <thead><tr><th>Category</th><th>Type</th><th>Points</th><th>Notes</th></tr></thead>
         <tbody>${categories.map(c=>
-          `<tr><td>${c.label_en}</td><td><span class="tag ${c.type==='number'?'number':c.type==='fpl_squad'?'squad':''}">${TYPE_LABEL[c.type]||c.type}</span></td><td>${c.id==='kamper'?'3 exact · 1 result':c.points}</td><td>${c.notes}</td></tr>`
+          `<tr><td>${c.label_en}</td><td><span class="tag ${c.type==='number'?'number':c.type==='fpl_squad'?'squad':''}">${TYPE_LABEL[c.type]||c.type}</span></td><td>${c.id==='kamper'?'3 exact · 1 W/L/D':c.points}</td><td>${c.notes}</td></tr>`
         ).join("")}</tbody>
       </table></div>
     </section>
@@ -188,162 +328,16 @@ const GH_REPO="Scorelax/boxing-day";
       </div>
     </section>`;
 
-  // ---------- tab: Overview ----------
-  function renderOverview(){
-    if(!submissions.length){
-      return `<div class="rec"><div class="cap">Overview</div><div class="det">No forms submitted yet.</div></div>`;
-    }
-    const byPlayer={};
-    submissions.forEach(r=>{(byPlayer[r.player_name]=byPlayer[r.player_name]||[]).push(r);});
-    const names=Object.keys(byPlayer).sort();
-    const find=(rows,catId,refId)=>rows.find(r=>r.category_id===catId&&(refId===undefined||r.ref_id===refId));
-    const matchLabel=id=>{const m=matches.find(x=>x.match_id===id);return m?`${m.home_team} vs ${m.away_team}`:id;};
-    const playerLabel=id=>{const p=players.find(x=>x.element_id===id);return p?`${p.name} (${p.team})`:id;};
-
-    const mrows=matches.map(m=>{
-      const cells=names.map(n=>{const r=find(byPlayer[n],"kamper",m.match_id);return `<td>${r?r.answer:'–'}</td>`;}).join("");
-      return `<tr><td>${m.home_team} vs ${m.away_team}</td>${cells}</tr>`;
-    }).join("");
-
-    const otherCats=categories.filter(c=>c.id!=="kamper"&&c.id!=="fpl_score");
-    const crows=otherCats.map(c=>{
-      const cells=names.map(n=>{
-        const r=find(byPlayer[n],c.id);
-        if(!r)return "<td>–</td>";
-        let v=r.answer;
-        if(c.type==="match_pick")v=matchLabel(v);
-        if(c.type==="player_pick")v=playerLabel(v);
-        return `<td>${v}</td>`;
-      }).join("");
-      return `<tr><td>${c.label_en}</td>${cells}</tr>`;
-    }).join("");
-
-    const squadBlocks=names.map(n=>{
-      const r=find(byPlayer[n],"fpl_score");
-      const ids=r?r.answer.split(";").filter(Boolean):[];
-      const squad=ids.map(id=>players.find(p=>p.element_id===id)).filter(Boolean);
-      const byPos={GKP:[],DEF:[],MID:[],FWD:[]};
-      squad.forEach(p=>{if(byPos[p.position])byPos[p.position].push(p);});
-      const line=pos=>byPos[pos].map(p=>`${p.name} (${p.team})`).join(", ")||"–";
-      return `<div class="rec"><div class="cap">${n}</div>
-        <div class="det">GK: ${line("GKP")}<br>DEF: ${line("DEF")}<br>MID: ${line("MID")}<br>FWD: ${line("FWD")}</div></div>`;
-    }).join("");
-
-    return `
-      <div class="subhead">Match predictions</div>
-      <div class="tablewrap"><table>
-        <thead><tr><th>Match</th>${names.map(n=>`<th>${n}</th>`).join("")}</tr></thead>
-        <tbody>${mrows}</tbody>
-      </table></div>
-
-      <div class="subhead" style="margin-top:28px">Other bets</div>
-      <div class="tablewrap"><table>
-        <thead><tr><th>Category</th>${names.map(n=>`<th>${n}</th>`).join("")}</tr></thead>
-        <tbody>${crows}</tbody>
-      </table></div>
-
-      <div class="subhead" style="margin-top:28px">Squads</div>
-      ${squadBlocks}`;
-  }
-  document.getElementById("panel-overview").innerHTML=renderOverview();
-
-  // ---------- tab: Leaderboard ----------
-  function scoreMatch(pred,actual){
-    if(pred===actual)return 3;
-    const [ph,pa]=pred.split("-").map(Number),[ah,aa]=actual.split("-").map(Number);
-    const predRes=ph>pa?"H":(ph===pa?"D":"A"),actRes=ah>aa?"H":(ah===aa?"D":"A");
-    return predRes===actRes?1:0;
-  }
-  function renderLeaderboard(){
-    if(!submissions.length){
-      return `<div class="rec"><div class="cap">Leaderboard</div><div class="det">No forms submitted yet.</div></div>`;
-    }
-    if(!results.length){
-      return `<div class="rec"><div class="cap">Leaderboard</div><div class="det">Results haven't been recorded yet — check back after Boxing Day.</div></div>`;
-    }
-    const byPlayer={};
-    submissions.forEach(r=>{(byPlayer[r.player_name]=byPlayer[r.player_name]||[]).push(r);});
-    const names=Object.keys(byPlayer).sort();
-    const find=(rows,catId,refId)=>rows.find(r=>r.category_id===catId&&(refId===undefined||r.ref_id===refId));
-    const resultRow=(catId,refId="")=>results.find(r=>r.category_id===catId&&r.ref_id===refId);
-
-    const kamperLines=matches.map(m=>{
-      const actual=resultRow("kamper",m.match_id);
-      const scores={};
-      names.forEach(n=>{
-        const sub=find(byPlayer[n],"kamper",m.match_id);
-        scores[n]=(sub&&actual&&actual.answer)?scoreMatch(sub.answer,actual.answer):null;
-      });
-      return{label:`${m.home_team} vs ${m.away_team}`,scores,known:!!(actual&&actual.answer)};
-    });
-
-    const otherCats=categories.filter(c=>c.id!=="kamper"&&c.id!=="fpl_score");
-    const catLines=otherCats.map(c=>{
-      const actual=resultRow(c.id);
-      const pts=+c.points;
-      const scores={};
-      names.forEach(n=>{
-        const sub=find(byPlayer[n],c.id);
-        scores[n]=(sub&&actual&&actual.answer)?(sub.answer===actual.answer?pts:0):null;
-      });
-      return{label:c.label_en,scores,known:!!(actual&&actual.answer)};
-    });
-
-    const ptsById={};playerPoints.forEach(p=>{ptsById[p.element_id]=+p.points;});
-    const fplTotals={};
-    names.forEach(n=>{
-      const sub=find(byPlayer[n],"fpl_score");
-      const ids=sub?sub.answer.split(";").filter(Boolean):[];
-      const allKnown=playerPoints.length>0&&ids.length===11&&ids.every(id=>ptsById[id]!==undefined);
-      fplTotals[n]=allKnown?ids.reduce((s,id)=>s+ptsById[id],0):null;
-    });
-    const knownFpl=Object.values(fplTotals).filter(v=>v!==null);
-    const maxFpl=knownFpl.length?Math.max(...knownFpl):null;
-    const fplPts=+categories.find(c=>c.id==="fpl_score").points;
-    const fplScores={};
-    names.forEach(n=>{fplScores[n]=fplTotals[n]===null?null:(fplTotals[n]===maxFpl?fplPts:0);});
-    const fplLine={label:"FPL score (own squad)",scores:fplScores,known:knownFpl.length>0};
-
-    const allLines=[...kamperLines,...catLines,fplLine];
-    const anyPending=allLines.some(l=>!l.known);
-
-    const totals={};
-    names.forEach(n=>{totals[n]=allLines.reduce((s,l)=>s+(l.scores[n]||0),0);});
-    const ranked=[...names].sort((a,b)=>totals[b]-totals[a]);
-    let rank=0,lastScore=null;
-    const standingsRows=ranked.map((n,i)=>{
-      if(totals[n]!==lastScore){rank=i+1;lastScore=totals[n];}
-      return `<tr><td>${rank}</td><td>${n}</td><td><b>${totals[n]}</b></td></tr>`;
-    }).join("");
-
-    const breakdownRows=allLines.map(l=>{
-      const cells=names.map(n=>`<td>${l.scores[n]===null?'–':l.scores[n]}</td>`).join("");
-      return `<tr><td>${l.label}</td>${cells}</tr>`;
-    }).join("");
-
-    return `
-      ${anyPending?`<div class="rec"><div class="det">Not every result has been recorded yet — standings below only count what's known so far and will keep updating.</div></div>`:""}
-      <div class="subhead">Standings</div>
-      <div class="tablewrap"><table>
-        <thead><tr><th>#</th><th>Player</th><th>Points</th></tr></thead>
-        <tbody>${standingsRows}</tbody>
-      </table></div>
-
-      <div class="subhead" style="margin-top:28px">Breakdown</div>
-      <div class="det" style="color:var(--muted);margin-bottom:14px">"–" means that result hasn't been recorded yet.</div>
-      <div class="tablewrap"><table>
-        <thead><tr><th>Category</th>${names.map(n=>`<th>${n}</th>`).join("")}</tr></thead>
-        <tbody>${breakdownRows}</tbody>
-      </table></div>`;
-  }
-  document.getElementById("panel-leaderboard").innerHTML=renderLeaderboard();
+  // ---------- tab: Overview (current season, submissions + live points) ----------
+  document.getElementById("panel-overview").innerHTML=renderSeasonHTML(computeSeasonScoring(currentSeason));
 
   // ---------- tab: Edit form ----------
   function renderEdit(){
-    if(!matches.length){
+    if(!currentMatches.length){
       return `<div class="rec"><div class="cap">Edit form</div><div class="det">Form will become available December 25th.</div></div>`;
     }
-    const deadline=new Date(Date.UTC(+year,11,26,12,30));
+    const calYear=+currentSeason.split("/")[0];
+    const deadline=new Date(Date.UTC(calYear,11,26,12,30));
     const closed=new Date()>deadline;
     const submitUrl=`https://github.com/${GH_REPO}/issues/new?template=boxing-day-submission.yml&labels=boxing-day-submission`;
     const editUrl=`https://github.com/${GH_REPO}/issues?q=${encodeURIComponent("is:issue label:boxing-day-submission author:@me")}`;
@@ -373,10 +367,10 @@ const GH_REPO="Scorelax/boxing-day";
   }
   document.getElementById("panel-edit").innerHTML=renderEdit();
 
-  if(players.length){
+  if(currentPlayers.length){
     const renderPlayers=(filter="")=>{
       const f=filter.trim().toLowerCase();
-      const rows=players.filter(p=>!f||p.name.toLowerCase().includes(f)||p.team.toLowerCase().includes(f));
+      const rows=currentPlayers.filter(p=>!f||p.name.toLowerCase().includes(f)||p.team.toLowerCase().includes(f));
       document.getElementById("playersTable").innerHTML=`
         <thead><tr><th>Name</th><th>Position</th><th>Club</th></tr></thead>
         <tbody>${rows.map(p=>`<tr><td>${p.name} (${p.team})</td><td>${p.position}</td><td>${p.team}</td></tr>`).join("")}</tbody>`;
@@ -386,13 +380,62 @@ const GH_REPO="Scorelax/boxing-day";
     if(filterInput)filterInput.oninput=e=>renderPlayers(e.target.value);
   }
 
-  // ---------- tab switching ----------
+  // ---------- History: All-time + one tab per past season ----------
+  function renderHistoryPanel(selection){
+    if(selection==="all-time"){
+      const seasons=[...new Set(matches.map(m=>m.season))].filter(s=>s&&results.some(r=>r.season===s));
+      if(!seasons.length){
+        return `<div class="rec"><div class="cap">All-time</div><div class="det">No completed seasons yet — check back after your first Boxing Day.</div></div>`;
+      }
+      const grand={},seasonsPlayed={};
+      seasons.forEach(season=>{
+        const scoring=computeSeasonScoring(season);
+        scoring.names.forEach(n=>{
+          grand[n]=(grand[n]||0)+scoring.totals[n];
+          seasonsPlayed[n]=(seasonsPlayed[n]||0)+1;
+        });
+      });
+      const names=Object.keys(grand).sort((a,b)=>grand[b]-grand[a]);
+      let rank=0,lastScore=null;
+      const rows=names.map((n,i)=>{
+        if(grand[n]!==lastScore){rank=i+1;lastScore=grand[n];}
+        return `<tr><td>${rank}</td><td>${n}</td><td><b>${grand[n]}</b></td><td>${seasonsPlayed[n]}</td></tr>`;
+      }).join("");
+      return `
+        <div class="subhead">All-time standings</div>
+        <div class="det" style="color:var(--muted);margin-bottom:14px">Sum of points across every completed season (${seasons.length} so far).</div>
+        <div class="tablewrap"><table>
+          <thead><tr><th>#</th><th>Player</th><th>Total points</th><th>Seasons</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table></div>`;
+    }
+    return `<div class="subhead">${selection}</div>` + renderSeasonHTML(computeSeasonScoring(selection));
+  }
+
+  const historySeasons=[...new Set(matches.map(m=>m.season))].filter(s=>s&&s!==currentSeason).sort().reverse();
+  document.getElementById("historyTabs").innerHTML=
+    `<button class="tab small" data-history="all-time">All-time</button>` +
+    historySeasons.map(s=>`<button class="tab small" data-history="${s}">${s}</button>`).join("");
+  document.getElementById("panel-history").innerHTML=renderHistoryPanel("all-time");
+
+  // ---------- tab switching (both rows share one active-state) ----------
+  function selectPanel(id){
+    document.querySelectorAll(".panel").forEach(p=>p.style.display="none");
+    document.getElementById(`panel-${id}`).style.display="";
+  }
   document.querySelectorAll("#tabBar .tab").forEach(btn=>{
     btn.onclick=()=>{
-      document.querySelectorAll("#tabBar .tab").forEach(b=>b.classList.remove("active"));
+      document.querySelectorAll(".tab").forEach(b=>b.classList.remove("active"));
       btn.classList.add("active");
-      document.querySelectorAll(".panel").forEach(p=>p.style.display="none");
-      document.getElementById(`panel-${btn.dataset.tab}`).style.display="";
+      selectPanel(btn.dataset.tab);
+    };
+  });
+  document.querySelectorAll("#historyTabs .tab").forEach(btn=>{
+    btn.onclick=()=>{
+      document.querySelectorAll(".tab").forEach(b=>b.classList.remove("active"));
+      btn.classList.add("active");
+      document.getElementById("panel-history").innerHTML=renderHistoryPanel(btn.dataset.history);
+      selectPanel("history");
     };
   });
 })();
