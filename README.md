@@ -13,8 +13,9 @@ data/
   eligible-players.csv     every season's eligible-player pool, accumulating - same
   categories.csv           the bet categories, their point values, and how each is answered (static)
   submissions.csv          everyone's answers ever, one row per answer, accumulating
-  results.csv              the actual correct answers, one row per category per season - filled in
-                            manually after each Boxing Day for now (see Status)
+  results.csv              the actual correct answers, one row per category per season - `straffer`
+                            is fetched by fetch_match_results.py once a season's matches finish,
+                            everything else still filled in manually for now (see Status)
   player-points.csv        actual FPL points each eligible player earned, per season - only needed
                             to score fpl_score; same manual-for-now caveat
   current-season.txt       empty, or the one season currently open for submissions - see below
@@ -22,6 +23,7 @@ scripts/
   fetch_boxing_day.py           the Dec-25 job - see below
   generate_submission_form.py   builds the year's GitHub Issue Form from that data
   process_submission.py         parses + validates + records a submission issue
+  fetch_match_results.py        computes `straffer` (penalties awarded) from finished matches - see below
   archive_season.py             the Dec-27 job - see below
 .github/
   ISSUE_TEMPLATE/boxing-day-submission.yml   generated, not hand-edited - see below
@@ -140,6 +142,7 @@ Run by hand:
 ```bash
 BOXING_DAY_YEAR=2026 python scripts/fetch_boxing_day.py
 python scripts/generate_submission_form.py
+BOXING_DAY_YEAR=2026 python scripts/fetch_match_results.py   # once that season's matches have all finished
 python scripts/archive_season.py   # only once you actually want to close the cycle
 ```
 (`BOXING_DAY_YEAR` defaults to the current year if unset — only useful for testing against a year other than "now".)
@@ -152,14 +155,16 @@ This repo is scaffolding, set up ahead of the 2026-12-26 event while the plan is
 
 Not built yet:
 
-1. **Automated `results.csv` / `player-points.csv` filling.** Both are hand-edited after Boxing Day for now. The data needed exists (see "Live match data" below), but writing the fetch script is future work - realistically once we're closer to actually needing it, since some of that data source's specifics (penalties, VAR overturns, and the FPL `multiplier` field's exact behavior) still need verifying against real finished matches/gameweeks first.
+1. **Automated `results.csv` / `player-points.csv` filling, beyond `straffer`.** `scripts/fetch_match_results.py` now fetches `straffer` (penalties awarded) from finished matches - see "Live match data" below for how that was confirmed. Everything else in `results.csv` is still hand-edited after Boxing Day, and `player-points.csv` entirely so. The remaining `number`/`team_pick`/`match_pick` categories that only need match events or Opta match-stats (`gule_kort`, `rode_kort`, `lag_flest_gule`, `kamp_flest_kort`, `lag_flest_scoringer`, `kamp_flest_scoringer`, `clean_sheets`, `totalt_mal`, `kamp_flest_skudd`, `kamp_flest_pasninger`, `hoyeste_ballbesittelse`) could extend the same script the same way; `spiller_mest_fpl`, `keeper_flest_saves`, and `fpl_score` need FPL points data instead (the sibling `fpl-draft-stats` project's `update_player_gameweeks.py` is a proven pattern for that, just against the classic FPL API instead of the draft one). `var_omgjoringer` has no automatable source at all - see "Live match data".
 2. **Historical data for seasons before `2022/23`** - the group's Google Sheet doesn't track anything earlier than that.
 
 ### `2025/26` import
 
 Imported from the group's spreadsheet as the first real test of the whole system end-to-end - matches, all 4 players' full submissions, and every result that could be either read straight from that sheet or cross-checked against the real Premier League match data. All 4 players' final totals (Kriss 12, Seb 11, Simon 16, Morten 10) were recomputed by the site's actual scoring code from scratch and matched the spreadsheet exactly, which is strong end-to-end confirmation the whole pipeline - import, scoring, ranking, Overview/History rendering - is correct.
 
-Left unrecorded in `results.csv` (nobody's spreadsheet answer was correct, so there's no way to reverse-engineer the true value from points alone, and the relevant match/gameweek stats aren't available from the free data sources used elsewhere in this project): `straffer` (penalties), `spiller_mest_fpl`, `keeper_flest_saves`, `var_omgjoringer`. Confirmed this doesn't matter for standings - all four were worth 0 points to everyone regardless (nobody guessed right), so leaving them unrecorded changes nothing about anyone's total; recording them is only useful for its own sake, not required for correct scoring.
+Left unrecorded in `results.csv` (nobody's spreadsheet answer was correct, so there's no way to reverse-engineer the true value from points alone, and the relevant match/gameweek stats aren't available from the free data sources used elsewhere in this project): `spiller_mest_fpl`, `keeper_flest_saves`, `var_omgjoringer`. Confirmed this doesn't matter for standings - all three are worth 0 points to everyone regardless (nobody guessed right), so leaving them unrecorded changes nothing about anyone's total; recording them is only useful for its own sake, not required for correct scoring.
+
+`straffer` was later filled in by `scripts/fetch_match_results.py` once the pulselive events feed's penalty handling was confirmed (see "Live match data") - the real answer is `0` (no penalties across all 7 fixtures), which, same as the above, doesn't change anyone's total either (nobody guessed 0).
 
 `hoyeste_ballbesittelse` turned out to be a `number` category (guess the actual highest single-team possession %, as a whole number - **round down**, so 66.9% counts as 66), not `team_pick` as originally defined - fixed in `categories.csv`. The real answer (Liverpool, 66.6% → 66) is now recorded; nobody guessed it, so this didn't change anyone's total either, but it's a real recorded result rather than a pending one.
 
@@ -183,7 +188,13 @@ All 4 final totals (Kriss 23, Seb 11, Simon 15, Morten 6) were recomputed from s
 
 ### Live match data
 
-`footballapi.pulselive.com` is the (undocumented, unofficial, no-API-key-required) API that actually powers premierleague.com's live match center. Confirmed against real fixtures that it has: `possession_percentage`, `total_scoring_att`/`ontarget_scoring_att` (shots/shots on target), `total_pass`/`accurate_pass`, `total_yel_card`, corners, saves, goals — and cards/goals also come through a timestamped per-match events feed. **Not yet confirmed:** how penalties-awarded and VAR overturns specifically show up in the data — need to check against a match that actually had one before trusting it. Since it's unofficial, it could change or get blocked without warning; low risk for one day a year, but worth knowing.
+`footballapi.pulselive.com` is the (undocumented, unofficial, no-API-key-required) API that actually powers premierleague.com's live match center. Confirmed against real fixtures that it has: `possession_percentage`, `total_scoring_att`/`ontarget_scoring_att` (shots/shots on target), `total_pass`/`accurate_pass`, `total_yel_card`, corners, saves, goals — and cards/goals also come through a timestamped per-match `events` feed on `GET /football/fixtures/<matchId>`, each with a `type`/`description` pair: `G`/`G` (goal), `O`/`O` (own goal), `B`/`Y` and `B`/`R` (yellow/red card), `S`/`ON`+`S`/`OFF` (substitution), `PS`/`PE` (period start/end).
+
+**Penalties: confirmed.** A penalty attempt is its own event - `P`/`P` if scored, `MP`/`MP` if missed (saved or off target) - one event per attempt regardless of outcome, so "penalties awarded" is just the count of `P`+`MP` events. Cross-checked against that same match's aggregate stats (`GET /football/stats/match/<matchId>`), which carry matching `penalty_won`/`penalty_conceded`/`penalty_faced` counts per team. Verified against GW1 2026/27 (real finished matches): Brentford's Igor Thiago missed a penalty (55', Brentford 3-0 Tottenham) and Liverpool's Dominik Szoboszlai scored a 90+9' penalty (Newcastle 2-2 Liverpool) - both picked up correctly, and no false positives across the other 8 matches. `scripts/fetch_match_results.py` implements this for `straffer`.
+
+**VAR overturns: confirmed absent.** Checked the events feed, the full fixture-detail response, and every one of the ~200 Opta fields in the match-stats endpoint (across all 10 GW1 fixtures) for anything VAR-related. The only mention anywhere is `matchOfficials` listing who served as the VAR official that match (`role: "VAR"`) - there's no decision/review/overturn event or flag. `var_omgjoringer` isn't automatable from this API; it stays manual (or needs a different source) until/unless that changes.
+
+Since it's unofficial, it could change or get blocked without warning; low risk for one day a year, but worth knowing.
 
 FPL's own API (`draft.premierleague.com/api/bootstrap-static`, same one used by the sibling `fpl-draft-stats` project) covers the FPL-specific bets: player/keeper points and saves, and the squad bet's live scoring.
 
